@@ -1,7 +1,5 @@
 ___
-# DELETE THIS INSTRUCTIONS AND ADD A SHORT INTRODUCTION ABOUT YOUR PROJECT
+# AI-Driven Decision-Making Models for Corporate Applications
 ___
 
-## Please refer the instructions in below URL:
-
-https://projects.ce.pdn.ac.lk/docs/how-to-add-a-project
+## This project explores the development of AI-powered decision-making models to optimize corporate workflows, enhance strategic planning, and improve operational efficiency. By leveraging machine learning and natural language processing, the system will analyze corporate data—including HR, finance, and operations—to generate data-driven insights.

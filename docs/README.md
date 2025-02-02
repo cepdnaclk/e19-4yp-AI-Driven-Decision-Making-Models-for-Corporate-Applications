@@ -19,6 +19,7 @@ title: AI-Driven Decision-Making Models for Corporate Applications
 
 #### Supervisors
 
+- Prof. Roshan G. Ragel, [email](mailto:roshanr@eng.pdn.ac.lk)
 - Dr. Asitha Bandaranayake, [email](mailto:asithab@eng.pdn.ac.lk)
 
 #### Table of content

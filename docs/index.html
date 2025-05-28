@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Driven Decision-Making Models for Corporate Applications</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.7;
+            color: #0f172a;
+            background: linear-gradient(135deg, #0f766e 0%, #059669 25%, #10b981 50%, #34d399 100%);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(52, 211, 153, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(5, 150, 105, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(25px);
+            border-radius: 24px;
+            padding: 4rem;
+            margin-bottom: 3rem;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #065f46, #047857, #059669, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 3rem;
+            text-align: center;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .team-section, .supervisors-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .team-card, .supervisor-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+            border-radius: 20px;
+            padding: 2.5rem;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-card::before, .supervisor-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #10b981, #34d399, #6ee7b7);
+        }
+
+        .team-card:hover, .supervisor-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(16, 185, 129, 0.2);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #065f46;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .person-name {
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .person-id {
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .person-email {
+            color: #059669;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid transparent;
+        }
+
+        .person-email:hover {
+            color: #047857;
+            border-bottom-color: #047857;
+        }
+
+        .main-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(25px);
+            border-radius: 24px;
+            padding: 4rem;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+
+        .toc {
+            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 4rem;
+            border-left: 6px solid #10b981;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .toc::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.1), transparent);
+            border-radius: 50%;
+        }
+
+        .toc h3 {
+            color: #065f46;
+            margin-bottom: 1.5rem;
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+
+        .toc ol {
+            margin-left: 2rem;
+            counter-reset: toc-counter;
+        }
+
+        .toc ol li {
+            counter-increment: toc-counter;
+            margin-bottom: 0.8rem;
+            position: relative;
+        }
+
+        .toc ol li::before {
+            content: counter(toc-counter, decimal-leading-zero);
+            position: absolute;
+            left: -2rem;
+            color: #10b981;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .toc a {
+            color: #047857;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+            padding-bottom: 2px;
+        }
+
+        .toc a:hover {
+            color: #065f46;
+            border-bottom-color: #34d399;
+        }
+
+        .section {
+            margin-bottom: 5rem;
+            scroll-margin-top: 2rem;
+            position: relative;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            left: -4rem;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, #10b981, #34d399, #6ee7b7);
+            border-radius: 2px;
+            opacity: 0.3;
+        }
+
+        .section h2 {
+            font-size: 2.5rem;
+            color: #0f172a;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            position: relative;
+        }
+
+        .section h2::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, #10b981, transparent);
+            margin-left: 1rem;
+        }
+
+        .section-icon {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            padding: 0.8rem;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .section p {
+            color: #374151;
+            margin-bottom: 1.5rem;
+            font-size: 1.15rem;
+            text-align: justify;
+            background: linear-gradient(135deg, rgba(236, 253, 245, 0.5), rgba(255, 255, 255, 0.5));
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.05);
+            position: relative;
+        }
+
+        .section p::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #10b981, #34d399);
+            border-radius: 0 2px 2px 0;
+        }
+
+        .methodology-phases {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .phase-card {
+            background: linear-gradient(135deg, rgba(236, 253, 245, 0.8), rgba(209, 250, 229, 0.6));
+            border-radius: 20px;
+            padding: 2.5rem;
+            border: 2px solid rgba(16, 185, 129, 0.2);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phase-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.1), transparent);
+            transition: all 0.4s ease;
+        }
+
+        .phase-card:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2);
+            border-color: #10b981;
+        }
+
+        .phase-card:hover::before {
+            top: -20%;
+            right: -20%;
+        }
+
+        .phase-title {
+            font-weight: 800;
+            color: #065f46;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .phase-number {
+            background: linear-gradient(135deg, #10b981, #34d399);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 0.9rem;
+        }
+
+        .phase-description {
+            color: #4b5563;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .link-card {
+            background: linear-gradient(135deg, #047857, #059669, #10b981);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: block;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(4, 120, 87, 0.3);
+        }
+
+        .link-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .link-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 25px 50px rgba(4, 120, 87, 0.4);
+            color: white;
+        }
+
+        .link-card:hover::before {
+            left: 100%;
+        }
+
+        .link-title {
+            font-weight: 800;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .link-description {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .publications-placeholder {
+            background: linear-gradient(135deg, rgba(254, 243, 199, 0.8), rgba(253, 230, 138, 0.6));
+            border: 3px dashed #f59e0b;
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            margin-top: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .publications-placeholder::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 30% 70%, rgba(245, 158, 11, 0.1), transparent),
+                radial-gradient(circle at 70% 30%, rgba(217, 119, 6, 0.1), transparent);
+        }
+
+        .placeholder-text {
+            color: #92400e;
+            font-style: italic;
+            font-size: 1.1rem;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(52, 211, 153, 0.05));
+            border-left: 5px solid #10b981;
+            border-radius: 0 15px 15px 0;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            font-style: italic;
+            color: #065f46;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .header, .main-content {
+                padding: 2.5rem;
+            }
+            
+            .section::before {
+                display: none;
+            }
+            
+            .team-section, .supervisors-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .section h2 {
+                font-size: 2rem;
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0);
+            }
+        }
+
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #10b981, #34d399, #6ee7b7);
+            transform-origin: left;
+            transform: scaleX(0);
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="scroll-indicator"></div>
+    
+    <div class="container">
+        <header class="header fade-in">
+            <h1 class="title">AI-Driven Decision-Making Models for Corporate Applications</h1>
+            
+            <div class="team-section">
+                <div class="team-card">
+                    <h3 class="section-title">👥 Team Members</h3>
+                    <div class="person-name">Nilakshi Induwara</div>
+                    <div class="person-id">E/19/028</div>
+                    <a href="mailto:e19028@eng.pdn.ac.lk" class="person-email">e19028@eng.pdn.ac.lk</a>
+                    <br><br>
+                    <div class="person-name">Dinuka Avinash</div>
+                    <div class="person-id">E/19/029</div>
+                    <a href="mailto:e19029@eng.pdn.ac.lk" class="person-email">e19029@eng.pdn.ac.lk</a>
+                    <br><br>
+                    <div class="person-name">Inesha Dissanayake</div>
+                    <div class="person-id">E/19/090</div>
+                    <a href="mailto:e19090@eng.pdn.ac.lk" class="person-email">e19090@eng.pdn.ac.lk</a>
+                </div>
+                
+                <div class="supervisor-card">
+                    <h3 class="section-title">👨‍🏫 Supervisors</h3>
+                    <div class="person-name">Prof. Roshan G. Ragel</div>
+                    <a href="mailto:roshanr@eng.pdn.ac.lk" class="person-email">roshanr@eng.pdn.ac.lk</a>
+                    <br><br>
+                    <div class="person-name">Dr. Asitha Bandaranayake</div>
+                    <a href="mailto:asithab@eng.pdn.ac.lk" class="person-email">asithab@eng.pdn.ac.lk</a>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content fade-in">
+            <nav class="toc">
+                <h3>📋 Table of Contents</h3>
+                <ol>
+                    <li><a href="#abstract">Abstract</a></li>
+                    <li><a href="#related-works">Related Works</a></li>
+                    <li><a href="#methodology">Methodology</a></li>
+                    <li><a href="#results-and-analysis">Results and Analysis</a></li>
+                    <li><a href="#conclusion">Conclusion</a></li>
+                    <li><a href="#publications">Publications</a></li>
+                    <li><a href="#links">Links</a></li>
+                </ol>
+            </nav>
+
+            <section id="abstract" class="section">
+                <h2><span class="section-icon">📄</span>Abstract</h2>
+                <p>This project explores the integration of Generative AI (GenAI) in automating human resource (HR) management tasks. It proposes a generalized AI model trained on organization-specific data—such as policies, workflows, and templates—to assist in document generation, automated emails, reminders, and employee guidance. The objective is to enhance HR operational efficiency, minimize errors, and reduce manual workloads while ensuring adherence to internal corporate standards.</p>
+                
+                <div class="highlight-box">
+                    "Transforming HR operations through intelligent automation while maintaining organizational compliance and standards."
+                </div>
+            </section>
+
+            <section id="related-works" class="section">
+                <h2><span class="section-icon">🔍</span>Related Works</h2>
+                <p>Existing literature highlights the growing role of AI in HR tasks such as recruitment, performance management, and training. The AI Capability Framework (ACF) is widely used to assess readiness for AI integration. Research on Generative AI, such as ChatGPT and reinforcement learning with human feedback (RLHF), emphasizes their utility in decision support.</p>
+                
+                <p>However, most studies focus on analytical rather than operational automation. This project addresses that gap by using GenAI for execution-oriented tasks within HRM, like document handling and query-based guidance.</p>
+                
+                <div class="highlight-box">
+                    "Bridging the gap between AI analytics and operational automation in human resource management."
+                </div>
+            </section>
+
+            <section id="methodology" class="section">
+                <h2><span class="section-icon">⚙️</span>Methodology</h2>
+                <p>The project followed a structured five-phase methodology designed to ensure comprehensive understanding, practical implementation, and thorough evaluation of the AI-driven HR solution.</p>
+                
+                <div class="methodology-phases">
+                    <div class="phase-card">
+                        <div class="phase-title">
+                            <span class="phase-number">1</span>
+                            Understanding AI Concepts
+                        </div>
+                        <div class="phase-description">Comprehensive literature reviews, hands-on workshops, and self-directed study covering advanced frameworks like TensorFlow and PyTorch to build foundational AI expertise.</div>
+                    </div>
+                    
+                    <div class="phase-card">
+                        <div class="phase-title">
+                            <span class="phase-number">2</span>
+                            Studying HR Functions
+                        </div>
+                        <div class="phase-description">Extensive field research including structured interviews, comprehensive surveys, and detailed observational studies across multiple industry sectors to understand HR workflows.</div>
+                    </div>
+                    
+                    <div class="phase-card">
+                        <div class="phase-title">
+                            <span class="phase-number">3</span>
+                            Architectural Design
+                        </div>
+                        <div class="phase-description">Systematic identification of common HR functions across sectors, followed by the design of a modular, scalable, and adaptable solution architecture.</div>
+                    </div>
+                    
+                    <div class="phase-card">
+                        <div class="phase-title">
+                            <span class="phase-number">4</span>
+                            Model Development
+                        </div>
+                        <div class="phase-description">Development and training of a sophisticated GenAI model incorporating natural language processing, reinforcement learning with human feedback, and continuous improvement loops.</div>
+                    </div>
+                    
+                    <div class="phase-card">
+                        <div class="phase-title">
+                            <span class="phase-number">5</span>
+                            Deployment & Evaluation
+                        </div>
+                        <div class="phase-description">Real-world testing in pilot organizations with comprehensive performance benchmarking, user feedback collection, and iterative improvements.</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="results-and-analysis" class="section">
+                <h2><span class="section-icon">📊</span>Results and Analysis</h2>
+                <div class="status-badge">In Progress</div>
+                <p>Comprehensive results and detailed analysis will be made available upon completion of the deployment and evaluation phase. The analysis will include performance metrics, user satisfaction scores, efficiency improvements, and comparative studies with traditional HR management approaches.</p>
+                
+                <div class="highlight-box">
+                    "Quantitative and qualitative analysis of AI integration impact on HR operational efficiency."
+                </div>
+            </section>
+
+            <section id="conclusion" class="section">
+                <h2><span class="section-icon">✅</span>Conclusion</h2>
+                <div class="status-badge">Pending Completion</div>
+                <p>Final conclusions, recommendations, and future research directions will be presented after the successful completion of all project phases. The conclusion will synthesize findings from the methodology implementation and provide actionable insights for organizations considering AI integration in HR operations.</p>
+                
+                <div class="highlight-box">
+                    "Evidence-based recommendations for successful AI implementation in corporate HR environments."
+                </div>
+            </section>
+
+            <section id="publications" class="section">
+                <h2><span class="section-icon">📚</span>Publications</h2>
+                <div class="publications-placeholder">
+                    <div class="placeholder-text">
+                        📝 Not any publications done yet.
+                        <br>
+                    </div>
+                </div>
+            </section>
+
+            <section id="links" class="section">
+                <h2><span class="section-icon">🔗</span>Links & Resources</h2>
+                <div class="links-grid">
+                    <a href="https://github.com/cepdnaclk/e19-4yp-AI-Driven-Decision-Making-Models-for-Corporate-Applications" class="link-card">
+                        <div class="link-title">📂 Project Repository</div>
+                        <div class="link-description">Complete source code, documentation, and development history with detailed commit logs and technical specifications.</div>
+                    </a>
+                    
+                    <a href="https://cepdnaclk.github.io/repository-name" class="link-card">
+                        <div class="link-title">🌐 Project Page</div>
+                        <div class="link-description">Interactive project demonstration with real-time features, user interface showcase, and live system updates.</div>
+                    </a>
+                    
+                    <a href="http://www.ce.pdn.ac.lk/" class="link-card">
+                        <div class="link-title">🏛️ Department of Computer Engineering</div>
+                        <div class="link-description">Academic home and research center fostering innovation in computer engineering.</div>
+                    </a>
+                    
+                    <a href="https://eng.pdn.ac.lk/" class="link-card">
+                        <div class="link-title">🎓 University of Peradeniya</div>
+                        <div class="link-description">Prestigious Faculty of Engineering renowned for cutting-edge research and academic excellence in technology.</div>
+                    </a>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Scroll progress indicator
+        function updateScrollProgress() {
+            const scrollIndicator = document.querySelector('.scroll-indicator');
+            const scrollTop = window.pageYOffset;
+            const docHeight = document.body.offsetHeight;
+            const winHeight = window.innerHeight;
+            const scrollPercent = scrollTop / (docHeight - winHeight);
+            const scrollPercentRounded = Math.round(scrollPercent * 100) / 100;
+            
+            scrollIndicator.style.transform = `scaleX(${scrollPercentRounded})`;
+        }
+
+        window.addEventListener('scroll', updateScrollProgress);
+
+        // Enhanced intersection observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.section, .phase-card, .link-card').forEach(element => {
+            observer.observe(element);
+        });
+
+        // Add parallax effect to background elements
+        // window.addEventListener('scroll', () => {
+        //     const scrolled = window.pageYOffset;
+        //     const rate = scrolled * -0.5;
+        //     document.body.style.transform = `translateY(${rate}px)`;
+        // });
+    </script>
+</body>
+</html>

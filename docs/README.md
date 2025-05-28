@@ -72,19 +72,7 @@ The project followed a structured five-phase methodology:
 
 ## 📊 Results and Analysis
 
-- ⏱ **45% reduction** in task completion time.
-- ✅ **Improved accuracy** in HR document handling and employee query resolution.
-- 🔄 **Adaptability**: Easy retraining and integration across varied industries.
-- 🔐 **Security & Ethics**: Implemented robust privacy protections and fairness-aware mechanisms.
-
 ## ✅ Conclusion
-
-The developed AI-driven HR assistant is:
-
-- 💡 **Generalizable** across different organizations.
-- 💰 **Cost-effective** and scalable.
-- 🛡 **Ethically compliant** and privacy-preserving.
-- 📈 **Operationally impactful**, reducing manual workload and improving productivity.
 
 ## Publications
 [//]: # "Note: Uncomment each once you uploaded the files to the repository"

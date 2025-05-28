@@ -50,9 +50,3 @@ A modular and iterative approach ensures adaptability and scalability across ind
 
 - **Dr. Asitha Bandaranayke**
 - **Prof. Roshan G. Ragel**
-
-## University Information
-
-Department of Computer Engineering  
-Faculty of Engineering  
-University of Peradeniya

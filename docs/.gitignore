@@ -5,4 +5,13 @@ _site/*
 Gemfile.lock
 Gemfile
 
+# Node/npm specific
+node_modules/
+dist/
+.env
+*.log
+npm-debug.log*
+yarn-error.log
+.vite/
+
 # Add your own files to be ignored from git in here

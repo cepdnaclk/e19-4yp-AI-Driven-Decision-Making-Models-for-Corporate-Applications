@@ -41,11 +41,11 @@ This is a sample image, to show how to add images to your page. To learn more op
 -->
 
 
-## Abstract
+## 📄 Abstract
 
 This project explores the integration of Generative AI (GenAI) in automating human resource (HR) management tasks. It proposes a generalized AI model trained on organization-specific data—such as policies, workflows, and templates—to assist in document generation, automated emails, reminders, and employee guidance. The objective is to enhance HR operational efficiency, minimize errors, and reduce manual workloads while ensuring adherence to internal corporate standards.
 
-## Related works
+## 🔍 Related Works
 
 Existing literature highlights the growing role of AI in HR tasks such as recruitment, performance management, and training. The AI Capability Framework (ACF) is widely used to assess readiness for AI integration. Research on Generative AI, such as ChatGPT and reinforcement learning with human feedback (RLHF), emphasizes their utility in decision support. However, most studies focus on analytical rather than operational automation. This project addresses that gap by using GenAI for execution-oriented tasks within HRM, like document handling and query-based guidance.
 
@@ -73,7 +73,7 @@ The project followed a structured five-phase methodology:
 
 ## ✅ Conclusion
 
-## Publications
+## 📚 Publications
 [//]: # "Note: Uncomment each once you uploaded the files to the repository"
 
 <!-- 1. [Semester 7 report](./) -->
@@ -83,7 +83,7 @@ The project followed a structured five-phase methodology:
 <!-- 5. Author 1, Author 2 and Author 3 "Research paper title" (2021). [PDF](./). -->
 
 
-## Links
+## 🔗 Links
 
 [//]: # ( NOTE: EDIT THIS LINKS WITH YOUR REPO DETAILS )
 

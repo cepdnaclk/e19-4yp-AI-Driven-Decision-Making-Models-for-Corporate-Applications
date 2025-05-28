@@ -56,7 +56,3 @@ A modular and iterative approach ensures adaptability and scalability across ind
 Department of Computer Engineering  
 Faculty of Engineering  
 University of Peradeniya
-
-## License
-
-This project is intended for academic purposes and is currently not under a specific license. Please contact the team for usage permissions.

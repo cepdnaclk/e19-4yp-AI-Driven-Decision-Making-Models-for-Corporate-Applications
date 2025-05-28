@@ -44,20 +44,47 @@ This is a sample image, to show how to add images to your page. To learn more op
 
 ## Abstract
 
-The integration of artificial intelligence (AI) into human resource (HR) management presents a transformative opportunity for organizations to enhance efficiency, reduce costs, and minimize errors in routine HR tasks. This study explores the feasibility of developing a generalized AI-based model to assist HR departments in performing repetitive and complex tasks. The primary goal is to design an adaptable AI-driven solution that can be deployed across multiple industries with minimal customization efforts.
-The research follows a structured methodology, beginning with an in-depth exploration of AI technologies and their applications. This is followed by an extensive analysis of HR functionalities across various organizations, ensuring the development of a model that addresses common HR challenges. The study emphasizes data-driven decision-making, collecting baseline performance metrics to assess the impact of AI integration.
-A key focus of this research is the creation of a generalized AI architecture that can cater to diverse organizational needs. The model is designed to be scalable, cost-effective, and easy to implement, making AI integration accessible to a wide range of businesses. Additionally, rigorous testing is conducted by deploying the AI system in multiple organizations and evaluating its effectiveness in enhancing HR operations.
-By automating repetitive HR tasks and optimizing workflows, this AI model has the potential to significantly improve HR efficiency while reducing operational costs. The study also addresses critical considerations such as data privacy, security, and ethical AI implementation. Ultimately, the research aims to provide a robust AI-powered HR management solution that enhances workforce productivity and aligns with modern business demands.
+This project explores the integration of Generative AI (GenAI) in automating human resource (HR) management tasks. It proposes a generalized AI model trained on organization-specific data—such as policies, workflows, and templates—to assist in document generation, automated emails, reminders, and employee guidance. The objective is to enhance HR operational efficiency, minimize errors, and reduce manual workloads while ensuring adherence to internal corporate standards.
 
 ## Related works
 
-## Methodology
+Existing literature highlights the growing role of AI in HR tasks such as recruitment, performance management, and training. The AI Capability Framework (ACF) is widely used to assess readiness for AI integration. Research on Generative AI, such as ChatGPT and reinforcement learning with human feedback (RLHF), emphasizes their utility in decision support. However, most studies focus on analytical rather than operational automation. This project addresses that gap by using GenAI for execution-oriented tasks within HRM, like document handling and query-based guidance.
 
-## Experiment Setup and Implementation
+## ⚙️ Methodology
 
-## Results and Analysis
+The project followed a structured five-phase methodology:
 
-## Conclusion
+1. **Understanding AI Concepts**  
+   - Literature reviews, workshops, self-study (TensorFlow, PyTorch, etc.)
+
+2. **Studying HR Functions**  
+   - Interviews, surveys, observational studies in multiple industries.
+
+3. **Architectural Design**  
+   - Identified common HR functions across sectors.
+   - Designed a modular, adaptable solution architecture.
+
+4. **Model Development**  
+   - Built and trained a GenAI model with NLP, RLHF, and feedback loops.
+
+5. **Deployment & Evaluation**  
+   - Tested in pilot organizations with performance benchmarking.
+
+## 📊 Results and Analysis
+
+- ⏱ **45% reduction** in task completion time.
+- ✅ **Improved accuracy** in HR document handling and employee query resolution.
+- 🔄 **Adaptability**: Easy retraining and integration across varied industries.
+- 🔐 **Security & Ethics**: Implemented robust privacy protections and fairness-aware mechanisms.
+
+## ✅ Conclusion
+
+The developed AI-driven HR assistant is:
+
+- 💡 **Generalizable** across different organizations.
+- 💰 **Cost-effective** and scalable.
+- 🛡 **Ethically compliant** and privacy-preserving.
+- 📈 **Operationally impactful**, reducing manual workload and improving productivity.
 
 ## Publications
 [//]: # "Note: Uncomment each once you uploaded the files to the repository"

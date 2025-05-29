@@ -359,6 +359,22 @@
             line-height: 1.6;
         }
 
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .tech-tag {
+            background: linear-gradient(135deg, rgba(236, 253, 245, 0.8), rgba(209, 250, 229, 0.6));        
+            color: #065f46;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid var(--primary);
+        }
+
         .links-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -573,6 +589,7 @@
                     <li><a href="#abstract">Abstract</a></li>
                     <li><a href="#related-works">Related Works</a></li>
                     <li><a href="#methodology">Methodology</a></li>
+                    <li><a href="#tech-stack">Technology Stack</a></li>
                     <li><a href="#results-and-analysis">Results and Analysis</a></li>
                     <li><a href="#conclusion">Conclusion</a></li>
                     <li><a href="#publications">Publications</a></li>
@@ -644,6 +661,18 @@
                         </div>
                         <div class="phase-description">Real-world testing in pilot organizations with comprehensive performance benchmarking, user feedback collection, and iterative improvements.</div>
                     </div>
+                </div>
+            </section>
+
+            <section id="tech-stack" class="section">
+                <h2><span class="section-icon">🔧</span>Technology Stack</h2>
+                <div class="tech-stack">
+                    <span class="tech-tag">Langgraph</span> 
+                    <span class="tech-tag">OpenAI GPT-4o</span>
+                    <span class="tech-tag">React</span>
+                    <span class="tech-tag">FastAPI</span>
+                    <span class="tech-tag">Vector DB</span>
+                    <span class="tech-tag">Python</span>
                 </div>
             </section>
 

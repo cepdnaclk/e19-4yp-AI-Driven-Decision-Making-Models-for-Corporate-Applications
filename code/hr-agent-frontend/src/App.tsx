@@ -1,9 +1,13 @@
+import ChatBox from './components/ChatBox';
+import PDFUpload from './components/PDFUpload';
 import ChatUI from './pages/ChatUI';
 
 function App() {
   return (
     <div className="App">
-      <ChatUI />
+      <PDFUpload />
+      <ChatBox />
+      {/* <ChatUI /> */}
     </div>
   );
 }

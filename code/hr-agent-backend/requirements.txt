@@ -1,0 +1,18 @@
+langchain
+langgraph
+PyPDF2
+python-dotenv
+# streamlit==1.18.1
+openai
+faiss-cpu
+# altair==4
+tiktoken
+fastapi
+
+
+uvicorn[standard]
+# langchain
+# langgraph
+# pdfplumber
+# chromadb                  # Or faiss-cpu or another vector DB
+# sentence-transformers     # For embeddings    

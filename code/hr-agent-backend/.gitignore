@@ -1,0 +1,26 @@
+# Global
+.DS_Store
+*.log
+*.sqlite3
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.swp
+*.bak
+
+# Python (backend)
+venv/
+backend/.env
+backend/__pycache__/
+backend/**/*.pyc
+backend/**/*.pyo
+backend/**/*.pyd
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/.ruff_cache/
+backend/instance/
+
+# Ignore FAISS index files, vectorstore directory inside backend
+vectorstore/

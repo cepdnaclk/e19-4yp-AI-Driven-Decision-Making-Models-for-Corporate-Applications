@@ -47,6 +47,6 @@ def get_vector_retriever():
     
     # return FAISS.load_local(VECTOR_DIR, embeddings).as_retriever()
     if os.path.exists("vectorstore"):
-        return FAISS.load_local("vectorstore", embeddings).as_retriever()
+        return FAISS.load_local("vectorstore", embeddings, allow_dangerous_deserialization=True).as_retriever()
     else:
         raise ValueError("Vector store not found. Upload a PDF first.")

@@ -23,7 +23,7 @@ const ChatBox: React.FC = () => {
         value={question}
         onChange={(e) => setQuestion(e.target.value)}
       />
-      <button onClick={askBot}>Ask</button>
+      <button onClick={askBot} disabled={!question.trim()}>Ask</button>
       <p><strong>Bot:</strong> {response}</p>
     </div>
   );

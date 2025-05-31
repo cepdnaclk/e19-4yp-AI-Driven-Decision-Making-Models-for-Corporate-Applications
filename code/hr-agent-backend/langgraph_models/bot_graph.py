@@ -1,16 +1,20 @@
 from langgraph.graph import StateGraph, END
 from langchain.chains import RetrievalQA
-# from langchain.chat_models import ChatOpenAI
-from langchain_community.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from app.services.vector_store import get_vector_retriever
 
 class GraphState(dict): pass
 
 def retrieve_answer(state: GraphState) -> GraphState:
+    question = state.get("question")
+    if not question:
+        raise ValueError("Missing 'question' in state.")
+    
     retriever = get_vector_retriever()
     qa = RetrievalQA.from_chain_type(llm=ChatOpenAI(), retriever=retriever)
-    result = qa.run(state["question"])
-    return GraphState({"answer": result})
+    result = qa.run(question)
+    print(f"[DEBUG] Received question: {question}")
+    return GraphState({"question": question, "answer": result})
 
 def build_bot_graph():
     builder = StateGraph(GraphState)

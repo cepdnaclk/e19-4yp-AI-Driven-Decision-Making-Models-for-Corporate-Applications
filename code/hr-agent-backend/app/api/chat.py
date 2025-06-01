@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from app.services.langgraph_agent import run_bot
 
@@ -9,5 +10,6 @@ class Question(BaseModel):
 
 @router.post("/ask-bot/")
 async def ask_bot(data: Question):
+    print("Received question:", data.question) 
     answer = run_bot(data.question)
     return {"response": answer}

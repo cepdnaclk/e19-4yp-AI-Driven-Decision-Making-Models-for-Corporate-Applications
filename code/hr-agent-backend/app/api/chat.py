@@ -1,5 +1,4 @@
 from fastapi import APIRouter
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from app.services.langgraph_agent import run_bot
 

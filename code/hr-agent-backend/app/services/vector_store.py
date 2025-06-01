@@ -1,52 +1,41 @@
 import os
-from PyPDF2 import PdfReader
+from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-# from langchain.vectorstores import FAISS
-from langchain_community.vectorstores import FAISS
-# from langchain.embeddings import OpenAIEmbeddings
 from langchain_openai import OpenAIEmbeddings
-from dotenv import load_dotenv
+from langchain.schema import Document
+from langchain_pinecone import PineconeVectorStore
+from pinecone import Pinecone as PineconeClient
+from app.utils.pinecone_config import PINECONE_API_KEY, PINECONE_INDEX_NAME  # adjust if named differently
 
-load_dotenv()
+# Initialize Pinecone and Langchain objects
+embedding = OpenAIEmbeddings()
+pc = PineconeClient(api_key=PINECONE_API_KEY)
+index = pc.Index(PINECONE_INDEX_NAME)
 
-VECTOR_DIR = "vectorstore"
-MAX_CHUNK_SIZE = 1500  # ~600–800 tokens depending on content
-CHUNK_OVERLAP = 200    # Less overlap = fewer embeddings
+vector_store = PineconeVectorStore(index=index, embedding=embedding, text_key="text")
 
-def load_text_from_pdf(file_path: str) -> str:
-    reader = PdfReader(file_path)
-    full_text = ""
-    for page in reader.pages:
-        text = page.extract_text()
-        if text:
-            full_text += text + "\n"
-    return full_text
+def process_pdf_and_upload(file_path: str):
+    """
+    Loads a PDF, splits it into text chunks, and uploads to Pinecone vector store.
+    """
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"File not found: {file_path}")
 
-async def process_pdf(file):
-    # Save uploaded file
-    path = f"uploads/{file.filename}"
-    with open(path, "wb") as f:
-        f.write(await file.read())
+    loader = PyPDFLoader(file_path)
+    documents = loader.load()
 
-    # Load and chunk
-    raw_text = load_text_from_pdf(path)
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=MAX_CHUNK_SIZE,
-        chunk_overlap=CHUNK_OVERLAP,
-        separators=["\n\n", "\n", " ", ""]
+        chunk_size=1000,
+        chunk_overlap=200
     )
-    chunks = splitter.split_text(raw_text)
+    chunks = splitter.split_documents(documents)
 
-    # Embed with OpenAI
-    embeddings = OpenAIEmbeddings()  # Uses OPENAI_API_KEY from env
-    db = FAISS.from_texts(chunks, embeddings)
-    db.save_local(VECTOR_DIR)
+    if not chunks:
+        raise ValueError("No chunks generated from the document.")
+
+    vector_store.add_documents(chunks)
+    print(f"[INFO] Uploaded {len(chunks)} chunks to Pinecone from {file_path}")
+
 
 def get_vector_retriever():
-    embeddings = OpenAIEmbeddings()
-    
-    # return FAISS.load_local(VECTOR_DIR, embeddings).as_retriever()
-    if os.path.exists("vectorstore"):
-        return FAISS.load_local("vectorstore", embeddings, allow_dangerous_deserialization=True).as_retriever()
-    else:
-        raise ValueError("Vector store not found. Upload a PDF first.")
+    return vector_store.as_retriever(search_kwargs={"k": 5})

@@ -37,9 +37,15 @@ const PDFUpload: React.FC = () => {
 
   return (
     <div>
-      <input type="file" accept=".pdf" onChange={handleFileChange} />
-      <button onClick={uploadFile}>Upload</button>
-      <p>{uploadStatus}</p>
+      <div>
+        <input type="file" accept=".pdf" onChange={handleFileChange} />
+        <button onClick={uploadFile}>Upload</button>
+        <p>{uploadStatus}</p>
+      </div>
+
+      <div>
+        {/* <button onClick={}>Generate weekly questions report</button> */}
+      </div>
     </div>
   );
 };

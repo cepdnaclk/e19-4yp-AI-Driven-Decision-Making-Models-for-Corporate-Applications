@@ -2,9 +2,6 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 const ChatBox: React.FC = () => {
-  // const [question, setQuestion] = useState('');
-  const [response, setResponse] = useState('');
-
   const [chatHistory, setChatHistory] = useState<{ question: string; answer: string }[]>([]);
   const [question, setQuestion] = useState('');
 
@@ -24,7 +21,7 @@ const ChatBox: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '1rem', maxWidth: '100%', margin: 'auto' }}>
+    <div style={{ padding: '1rem', width: '90rem', marginLeft: '40px', margin: 'auto' }}>
       <div style={{ border: '1px solid #ccc', padding: '1rem', height: '400px', overflowY: 'auto' }}>
         {chatHistory.map((chat, index) => (
           <div key={index} style={{ marginBottom: '1rem' }}>

@@ -11,12 +11,22 @@ const Sidebar: React.FC = () => {
       <ul className="sidebar-nav">
         <li>
           <NavLink to="/pdf-upload">
-            Upload PDF
+            Upload Company Docs 
+          </NavLink>
+        </li>
+        <li>
+          <NavLink to="/report">
+            Genrerate Feedback Report
           </NavLink>
         </li>
         <li>
           <NavLink to="/chat">
             Chat
+          </NavLink>
+        </li>
+        <li>
+          <NavLink to="/feedback">
+            Staff Feedback & Ideas
           </NavLink>
         </li>
       </ul>

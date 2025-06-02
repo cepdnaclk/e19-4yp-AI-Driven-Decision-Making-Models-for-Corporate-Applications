@@ -62,10 +62,6 @@ const PDFUpload: React.FC = () => {
         <button onClick={uploadFile} className="upload-button" disabled={files.length === 0}>Upload</button>
         <p className="upload-status">{uploadStatus}</p>
       </div>
-
-      <div className="upload-extra">
-        {/* <button onClick={}>Generate weekly questions report</button> */}
-      </div>
     </div>
   );
 };

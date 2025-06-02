@@ -10,3 +10,4 @@ pinecone-client
 # pinecone
 uvicorn[standard]
 # pdfplumber
+fpdf

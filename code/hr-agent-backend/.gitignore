@@ -22,5 +22,9 @@ backend/.mypy_cache/
 backend/.ruff_cache/
 backend/instance/
 
-# Ignore FAISS index files, vectorstore directory inside backend
+# vectorstore directory inside backend
 vectorstore/
+
+# Other
+/feedback_uploads/
+/uploads/

@@ -5,6 +5,8 @@ from app.services.vector_store import get_vector_retriever
 
 class GraphState(dict): pass
 
+llm = ChatOpenAI(model="gpt-4o", temperature=0.3)
+
 def retrieve_answer(state: GraphState) -> GraphState:
     print(f"[DEBUG] Full state received: {state}")
     question = state.get("question")
@@ -12,7 +14,7 @@ def retrieve_answer(state: GraphState) -> GraphState:
         raise ValueError("Missing 'question' in state.")
     
     retriever = get_vector_retriever()
-    qa = RetrievalQA.from_chain_type(llm=ChatOpenAI(), retriever=retriever)
+    qa = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
     result = qa.invoke({"query": question})
     return {"question": question, "answer": result}
 

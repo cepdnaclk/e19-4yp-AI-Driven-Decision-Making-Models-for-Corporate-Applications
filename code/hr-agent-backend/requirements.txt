@@ -1,0 +1,13 @@
+langchain
+langgraph
+PyPDF2
+python-dotenv
+openai
+faiss-cpu
+tiktoken
+fastapi
+pinecone-client
+# pinecone
+uvicorn[standard]
+# pdfplumber
+fpdf

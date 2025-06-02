@@ -1,25 +1,26 @@
 .report-container {
-  padding: 20px;
+  padding: 2rem;
 }
 
 .report-description {
   font-size: 1rem;
   color: #444;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 }
 
 .report-button {
   padding: 10px 16px;
   font-size: 1rem;
   cursor: pointer;
-  background-color: #13385ad4;
+  background-color: #1761a5e0;
   color: white;
   border: none;
   border-radius: 4px;
+  margin-left: 2rem;
 }
 
 .report-button:hover {
-  background-color: #13385ae0;
+  background-color: #1761a5eb;
 }
 
 .report-pdf-container {

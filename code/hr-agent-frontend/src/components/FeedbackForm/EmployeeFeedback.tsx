@@ -15,7 +15,7 @@ const EmployeeFeedbackForm: React.FC = () => {
   return (
     <div className="feedback-form">
       <textarea
-        placeholder="Describe your issue or suggestion..."
+        placeholder="Describe your issue or suggestion."
         value={message}
         onChange={(e) => setMessage(e.target.value)}
       />

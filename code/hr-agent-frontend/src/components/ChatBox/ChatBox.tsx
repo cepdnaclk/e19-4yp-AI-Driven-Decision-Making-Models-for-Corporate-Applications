@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './ChatBox.css';
+import ReactMarkdown from 'react-markdown';
 
 const ChatBox: React.FC = () => {
   const [chatHistory, setChatHistory] = useState<{ question: string; answer: string }[]>([]);
@@ -21,14 +22,14 @@ const ChatBox: React.FC = () => {
     }
   };
 
-  // remove previously given pdf if removed from storage - also option to remove uploaded pdfs
+  // have to remove previously given pdf if removed from storage - also option to remove uploaded pdfs
   return (
     <div className="chatbox-container">
       <div className="chatbox-window">
         {chatHistory.map((chat, index) => (
           <div key={index} className="chatbox-message">
             <div><strong>You:</strong> {chat.question}</div>
-            <div><strong>Bot:</strong> <p style={{ whiteSpace: 'pre-line' }}>{chat.answer}</p></div>
+            <div className="bot-message"><strong>Assistant:</strong><ReactMarkdown>{chat.answer}</ReactMarkdown></div>
           </div>
         ))}
       </div>

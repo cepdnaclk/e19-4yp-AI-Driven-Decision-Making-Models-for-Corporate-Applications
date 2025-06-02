@@ -54,13 +54,16 @@ const PDFUpload: React.FC = () => {
         {files.length > 0 && (
           <ul className="file-list">
             {files.map((file, index) => (
-              <li key={index}>{file.name}ds</li>
+              <li key={index}>{file.name}</li>
             ))}
           </ul>
         )}
 
         <button onClick={uploadFile} className="upload-button" disabled={files.length === 0}>Upload</button>
-        <p className="upload-status">{uploadStatus}</p>
+        {/* <p className="upload-status">{uploadStatus}</p> */}
+        <p className="upload-status">
+          {uploadStatus.startsWith("Upload successful") ? "Successfully uploaded!" : uploadStatus}
+        </p>
       </div>
     </div>
   );

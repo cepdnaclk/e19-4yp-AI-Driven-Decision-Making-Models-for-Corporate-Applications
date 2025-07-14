@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environment
+venv/
+.env/
+*.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# SQLite DB and backups (optional — if you want to keep only schema or migrate with Alembic)
+agents.db
+*.db-journal
+
+# Uploaded files, vector indexes, PDFs
+data/pdfs/
+data/vectors/
+data/agents/
+
+# VSCode
+.vscode/
+
+# Jupyter notebooks checkpoints (if any)
+.ipynb_checkpoints/
+
+# PyCharm
+.idea/
+
+# FAISS index files (usually saved in vectorstore paths)
+*.faiss*

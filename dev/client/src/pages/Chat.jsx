@@ -8,10 +8,11 @@ import {
   HStack,
   useToast,
   Spinner,
+  IconButton,
 } from "@chakra-ui/react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import { MdArrowBack } from "react-icons/md";
+import { MdArrowBack, MdAttachFile } from "react-icons/md";
 
 function Chat() {
   const { agentId } = useParams();
@@ -46,9 +47,12 @@ function Chat() {
       setInitialLoading(true);
       try {
         // Fetch agent
-        const agentRes = await fetch(`http://localhost:8000/agents/${agentId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const agentRes = await fetch(
+          `http://localhost:8000/agents/${agentId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         if (!agentRes.ok) throw new Error("Unauthorized to access agent");
 
         const agentData = await agentRes.json();
@@ -135,6 +139,19 @@ function Chat() {
     }
   };
 
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append("file", file);
+
+    await fetch(`http://localhost:8000/chat/${agentId}/upload`, {
+      method: "POST",
+      body: formData,
+    });
+
+    toast({ title: "Document uploaded!", status: "success" });
+  };
+
   if (initialLoading) {
     return (
       <Box p={8} textAlign="center">
@@ -147,13 +164,19 @@ function Chat() {
   return (
     <VStack minHeight="100vh" spacing={8} p={5} background="#3182ce">
       <Box w="80%" p={8}>
-        <Button leftIcon={<MdArrowBack />} onClick={() => navigate("/dashboard")} mb={6}>
+        <Button
+          leftIcon={<MdArrowBack />}
+          onClick={() => navigate("/dashboard")}
+          mb={6}
+        >
           Back to Dashboard
         </Button>
 
         <Box background="white" p="10" borderRadius="10">
           <Box color="white" background="#3182ce" p="15" borderTopRadius={15}>
-            <Heading color="white" mb={2}>Chat with {agent.name}</Heading>
+            <Heading color="white" mb={2}>
+              Chat with {agent.name}
+            </Heading>
             <Text mb={2} color="white.300">
               {agent?.description}
             </Text>
@@ -170,7 +193,8 @@ function Chat() {
               {messages.length === 0 && (
                 <Box p={3} bg="blue.100" borderRadius="md">
                   <Text>
-                    👋 Hello! I'm {agent?.name || "your AI agent"}. How can I help you today?
+                    👋 Hello! I'm {agent?.name || "your AI agent"}. How can I
+                    help you today?
                   </Text>
                 </Box>
               )}
@@ -182,7 +206,9 @@ function Chat() {
                   bg={msg.role === "user" ? "gray.100" : "blue.100"}
                 >
                   <Text>
-                    <strong>{msg.role === "user" ? "You" : agent?.name || "Agent"}:</strong>{" "}
+                    <strong>
+                      {msg.role === "user" ? "You" : agent?.name || "Agent"}:
+                    </strong>{" "}
                     {msg.content}
                   </Text>
                 </Box>
@@ -191,7 +217,19 @@ function Chat() {
             </VStack>
           </Box>
 
-          <HStack>
+          <HStack spacing={2}>
+            <IconButton
+              icon={<MdAttachFile />}
+              onClick={() => document.getElementById("fileInput").click()}
+              aria-label="Attach file"
+            />
+            <input
+              id="fileInput"
+              type="file"
+              accept="application/pdf"
+              style={{ display: "none" }}
+              onChange={handleFileUpload}
+            />
             <Input
               placeholder="Type your message..."
               value={input}

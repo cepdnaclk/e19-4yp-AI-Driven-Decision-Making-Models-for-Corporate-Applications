@@ -1,9 +1,9 @@
-from fastapi import APIRouter, HTTPException, Request, Query, Depends
-from app.services.rag_engine import ReActAgent
-from app.models.chat import ChatRequest
-from app.models.chat import ChatMessage
+from fastapi import APIRouter, HTTPException, UploadFile, File, Depends
+from app.services.rag_engine import get_or_create_agent
 from app.services.agent_runner import ReActAgent
 from app.dependencies.auth_dependencies import AuthDependencies
+from app.models.chat import ChatRequest
+from app.models.chat import ChatMessage
 from datetime import datetime
 import sqlite3, json
 
@@ -73,3 +73,25 @@ async def get_chat_history(agent_id: str, user=Depends(auth_dependencies.get_cur
         return {"chat_history": json.loads(result[0])}
     else:
         return {"chat_history": []}
+
+@router.post("/{agent_id}/upload")
+async def upload_chat_file(
+    agent_id: str,
+    file: UploadFile = File(...),
+    user: dict = Depends(auth_dependencies.get_current_user),
+):
+    user_id = user.get("user_id")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="user_id missing in token")
+    
+    temp_path = f"./temp_chat_uploads/{user_id}_{file.filename}"
+    
+    with open(temp_path, "wb") as f:
+        f.write(await file.read())
+    
+    # Get or create agent for this user & agent_id
+    agent = get_or_create_agent(agent_id, user_id)
+    
+    agent.append_pdf_to_temp_retriever(temp_path)
+    
+    return {"message": "PDF added to session retriever."}

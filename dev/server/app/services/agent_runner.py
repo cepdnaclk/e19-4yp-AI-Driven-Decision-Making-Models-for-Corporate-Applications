@@ -22,6 +22,7 @@ class ReActAgent:
         self.memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
         self.agent_executor = None
         self.retriever = None
+        self.temp_retriever = None  # session based retriever
 
     def load_agent_config(self):
         conn = sqlite3.connect('agents.db')
@@ -65,11 +66,31 @@ class ReActAgent:
             handle_parsing_errors=True
         )
 
+    def append_pdf_to_temp_retriever(self, file_path: str):
+        docs = pdf_processor.load(file_path)
+
+        if not docs:
+            print("No documents found in PDF.")
+            return
+
+        if self.temp_retriever:
+            self.temp_retriever.vectorstore.add_documents(docs)
+        else:
+            vs = FAISS.from_documents(docs, pdf_processor.embeddings)
+            self.temp_retriever = vs.as_retriever()
+
     def _retrieve_knowledge(self, query: str) -> str:
+        all_docs = []
+
         if self.retriever:
-            docs = self.retriever.get_relevant_documents(query)
-            return "\n".join([doc.page_content for doc in docs[:3]])
-        return "No knowledge base available"
+            all_docs.extend(self.retriever.get_relevant_documents(query))
+        if self.temp_retriever:
+            all_docs.extend(self.temp_retriever.get_relevant_documents(query))
+
+        if not all_docs:
+            return "No knowledge base available"
+
+        return "\n".join([doc.page_content for doc in all_docs[:3]])
 
     def chat(self, message: str, chat_history: List[ChatMessage]) -> str:
         if not self.agent_executor:

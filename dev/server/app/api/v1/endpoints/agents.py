@@ -1,9 +1,9 @@
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
 from typing import List
 import json, uuid, sqlite3, os, shutil
-from app.services.rag_engine import PDFProcessor
-from app.services.rag_engine import SystemPromptGenerator
-from app.services.rag_engine import ReActAgent
+from app.services.pdf_processor import PDFProcessor
+from app.services.prompt_generator import SystemPromptGenerator
+from app.services.agent_runner import ReActAgent
 from app.models.chat import AgentUpdateRequest
 from app.dependencies.auth_dependencies import AuthDependencies
 

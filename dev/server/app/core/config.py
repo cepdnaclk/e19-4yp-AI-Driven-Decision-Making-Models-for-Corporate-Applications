@@ -31,6 +31,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS chat_history (
             id TEXT PRIMARY KEY,
             agent_id TEXT NOT NULL,
+            user_id TEXT,
             messages TEXT NOT NULL,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (agent_id) REFERENCES agents (id)

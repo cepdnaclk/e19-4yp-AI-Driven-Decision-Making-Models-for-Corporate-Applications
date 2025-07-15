@@ -12,12 +12,18 @@ router = APIRouter()
 auth_dependencies = AuthDependencies()
 
 @router.post("/")
-async def chat_with_agent(chat_request: ChatRequest, user=Depends(auth_dependencies.get_current_user)):
+async def chat_with_agent(
+    chat_request: ChatRequest, 
+    user: dict = Depends(auth_dependencies.get_current_user)
+):
     try:
         user_id = user["sub"]
         user_role = user["role"]
 
         print("✅ Chat requested by", user_id, "with role", user_role)
+
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Missing user ID in token")
 
         # Only admins or assigned users can chat with this agent
         if user_role != "admin":
@@ -25,7 +31,7 @@ async def chat_with_agent(chat_request: ChatRequest, user=Depends(auth_dependenc
             if chat_request.agent_id not in assigned_agents:
                 raise HTTPException(status_code=403, detail="You are not authorized to chat with this agent.")
         
-        agent = ReActAgent(chat_request.agent_id)
+        agent = get_or_create_agent(chat_request.agent_id, user_id)
         response = agent.chat(chat_request.message, chat_request.chat_history)
 
         updated_history = chat_request.chat_history + [
@@ -36,10 +42,10 @@ async def chat_with_agent(chat_request: ChatRequest, user=Depends(auth_dependenc
         conn = sqlite3.connect('agents.db')
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT OR REPLACE INTO chat_history (id, agent_id, messages, updated_at)
-            VALUES (?, ?, ?, ?)
-        ''', (f"chat_{chat_request.agent_id}", chat_request.agent_id, 
-              json.dumps([msg.dict() for msg in updated_history]), datetime.now()))
+            INSERT OR REPLACE INTO chat_history (id, agent_id, user_id, messages, updated_at)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (f"chat_{chat_request.agent_id}_{user_id}", chat_request.agent_id, user_id, 
+      json.dumps([msg.dict() for msg in updated_history]), datetime.now()))
         conn.commit()
         conn.close()
 
@@ -65,7 +71,8 @@ async def get_chat_history(agent_id: str, user=Depends(auth_dependencies.get_cur
 
     conn = sqlite3.connect('agents.db')
     cursor = conn.cursor()
-    cursor.execute('SELECT messages FROM chat_history WHERE agent_id = ?', (agent_id,))
+    cursor.execute('SELECT messages FROM chat_history WHERE agent_id = ? AND user_id = ?', 
+                   (agent_id, user_id))
     result = cursor.fetchone()
     conn.close()
 
@@ -80,7 +87,7 @@ async def upload_chat_file(
     file: UploadFile = File(...),
     user: dict = Depends(auth_dependencies.get_current_user),
 ):
-    user_id = user.get("user_id")
+    user_id = user["sub"]
     if not user_id:
         raise HTTPException(status_code=401, detail="user_id missing in token")
     

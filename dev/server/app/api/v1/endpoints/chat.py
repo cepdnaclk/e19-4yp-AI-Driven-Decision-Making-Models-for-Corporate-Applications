@@ -1,10 +1,12 @@
 from fastapi import APIRouter, HTTPException, UploadFile, File, Depends
 from app.services.rag_engine import get_or_create_agent
 from app.services.agent_runner import ReActAgent
+from app.services.email_service import save_email_to_db, send_real_email
 from app.dependencies.auth_dependencies import AuthDependencies
-from app.models.chat import ChatRequest
-from app.models.chat import ChatMessage
+from app.models.chat import ChatRequest, ChatMessage, EmailRequest
 from datetime import datetime
+import logging
+from email.message import EmailMessage
 import sqlite3, json
 
 router = APIRouter()
@@ -102,3 +104,22 @@ async def upload_chat_file(
     agent.append_pdf_to_temp_retriever(temp_path)
     
     return {"message": "PDF added to session retriever."}
+
+# ROute for sending emails
+@router.post("/send-email")
+def send_email(
+    email_data: EmailRequest,
+    user=Depends(auth_dependencies.get_current_user)
+):
+    sender = user.get("email")
+    if not sender:
+        raise HTTPException(status_code=400, detail="User email not found")
+
+    try:
+        send_real_email(sender, email_data.to, email_data.subject, email_data.body)
+        save_email_to_db(sender, email_data.to, email_data.subject, email_data.body)
+    except Exception as e:
+        logging.error(f"Failed to send email: {e}")
+        raise HTTPException(status_code=500, detail="Failed to send email")
+
+    return {"message": "Email sent successfully"}

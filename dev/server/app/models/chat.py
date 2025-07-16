@@ -30,6 +30,16 @@ class UpdateProfileRequest(BaseModel):
     old_password: str | None = None
     new_password: str | None = None
 
+class EmailRequest(BaseModel):
+    to: EmailStr
+    subject: str
+    body: str
+
+class EmailInput(BaseModel):
+    recipient: EmailStr = Field(..., description="Recipient's email address")
+    subject: str = Field(..., description="Subject of the email")
+    body: str = Field(..., description="Body of the email")
+
 class LoginResponse(BaseModel):
     access_token: str
     token_type: str

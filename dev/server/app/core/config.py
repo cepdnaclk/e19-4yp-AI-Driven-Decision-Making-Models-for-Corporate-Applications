@@ -70,6 +70,17 @@ def init_db():
             FOREIGN KEY (user_id) REFERENCES users(id)
         )
     ''')
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS emails (
+            id TEXT PRIMARY KEY,
+            sender TEXT,
+            recipient TEXT,
+            subject TEXT,
+            body TEXT,
+            sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    ''')
     
     conn.commit()
     conn.close()

@@ -9,15 +9,24 @@ import {
   useToast,
   Spinner,
   IconButton,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import { MdArrowBack, MdAttachFile } from "react-icons/md";
+import { MdAttachFile, MdEditNote } from "react-icons/md";
+import LetterForm from "../components/LetterForm";
 
 function Chat() {
   const { agentId } = useParams();
   const toast = useToast();
   const navigate = useNavigate();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [agent, setAgent] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -50,7 +59,7 @@ function Chat() {
         const agentRes = await fetch(
           `http://localhost:8000/agents/${agentId}`,
           {
-            headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` },
           }
         );
         if (!agentRes.ok) throw new Error("Unauthorized to access agent");
@@ -152,6 +161,13 @@ function Chat() {
     toast({ title: "Document uploaded!", status: "success" });
   };
 
+  const handleLetterGenerated = (letterContent) => {
+    setMessages((prev) => [
+      ...prev,
+      { role: "assistant", content: letterContent }
+    ]);
+  };
+
   if (initialLoading) {
     return (
       <Box p={8} textAlign="center">
@@ -230,6 +246,12 @@ function Chat() {
               style={{ display: "none" }}
               onChange={handleFileUpload}
             />
+            <IconButton
+              icon={<MdEditNote />}
+              onClick={onOpen}
+              aria-label="Create letter"
+              title="Create letter"
+            />
             <Input
               placeholder="Type your message..."
               value={input}
@@ -250,6 +272,18 @@ function Chat() {
           </HStack>
         </Box>
       </Box>
+
+      {/* Modal for letter form */}
+      <Modal isOpen={isOpen} onClose={onClose} size="lg">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Create Letter</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <LetterForm onClose={onClose} onLetterGenerated={handleLetterGenerated} />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </VStack>
   );
 }

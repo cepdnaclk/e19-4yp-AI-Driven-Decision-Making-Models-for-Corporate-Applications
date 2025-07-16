@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 
 # Pydantic models
 class ChatMessage(BaseModel):
@@ -29,6 +29,13 @@ class UpdateProfileRequest(BaseModel):
     email: EmailStr | None = None
     old_password: str | None = None
     new_password: str | None = None
+
+class LetterRequest(BaseModel):
+    template_type: str
+    fields: Dict[str, Any]
+
+class LetterResponse(BaseModel):
+    content: str
 
 class LoginResponse(BaseModel):
     access_token: str

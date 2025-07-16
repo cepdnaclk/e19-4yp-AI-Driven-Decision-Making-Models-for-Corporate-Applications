@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field
 from typing import List, Optional
 
 # Pydantic models
@@ -22,6 +22,13 @@ class AgentUpdateRequest(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     tools: Optional[List[str]] = None
+
+class UpdateProfileRequest(BaseModel):
+    firstname: str | None = None
+    lastname: str | None = None
+    email: EmailStr | None = None
+    old_password: str | None = None
+    new_password: str | None = None
 
 class LoginResponse(BaseModel):
     access_token: str

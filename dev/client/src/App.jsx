@@ -54,7 +54,7 @@ function App() {
           element={<ProtectedRoute element={ViewProfile} />}
         />
         <Route
-          path="/profile/edit"
+          path="/edit-profile"
           element={<ProtectedRoute element={EditProfile} />}
         />
       </Routes>

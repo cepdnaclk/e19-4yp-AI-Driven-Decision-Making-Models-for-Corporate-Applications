@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import init_db
-from app.api.v1.endpoints import tools, agents, chat, users, profile
+from app.api.v1.endpoints import tools, agents, chat, users
 
 app = FastAPI(title="Agentic AI Platform", version="1.0.0")
 
@@ -22,7 +22,6 @@ app.include_router(tools.router, prefix="/tools", tags=["Tools"])
 app.include_router(agents.router, prefix="/agents", tags=["Agents"])
 app.include_router(chat.router, prefix="/chat", tags=["Chat"])
 app.include_router(users.router, tags=["Users"])
-app.include_router(profile.router, prefix="/profile", tags=["Profile"])
 
 @app.get("/")
 async def root():

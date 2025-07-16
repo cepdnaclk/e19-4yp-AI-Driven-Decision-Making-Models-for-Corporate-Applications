@@ -15,11 +15,12 @@ export const loginUser = async (username, password) => {
   return res.data;
 };
 
-export async function registerCustomer(username, password) {
+export async function registerCustomer(username, password, email) {
   const formData = new FormData();
   formData.append("username", username);
   formData.append("password", password);
-  formData.append("role", "customer"); // <-- add this
+  formData.append("email", email);
+  formData.append("role", "customer");
 
   const res = await fetch("http://localhost:8000/register", {
     method: "POST",
@@ -38,7 +39,7 @@ export async function createUserByAdmin(username, password, role) {
   formData.append("password", password);
   formData.append("role", role);
 
-  const res = await fetch("http://localhost:8000/create-employee", {
+  const res = await fetch("http://localhost:8000/create-user", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,

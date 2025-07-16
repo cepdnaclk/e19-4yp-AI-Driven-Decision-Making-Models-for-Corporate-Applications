@@ -70,9 +70,9 @@ function Home() {
           </Heading>
           <Text fontSize="lg" mt="3">Build and deploy intelligent AI agents for your workflows</Text>
         </Box>
-        <Button colorScheme="gray" onClick={handleLogout} mt="6">
+        {/* <Button colorScheme="gray" onClick={handleLogout} mt="6">
           Logout
-        </Button>
+        </Button> */}
       </Flex>
 
       {role === "admin" && (

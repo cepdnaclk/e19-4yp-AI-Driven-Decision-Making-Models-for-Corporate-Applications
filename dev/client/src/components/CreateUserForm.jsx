@@ -15,12 +15,14 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { createUserByAdmin } from "../services/auth";
+import { useNavigate } from "react-router-dom";
 
 export default function CreateUserForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("employee");
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate(); 
   const toast = useToast();
 
   const handleCreate = async (e) => {
@@ -38,7 +40,7 @@ export default function CreateUserForm() {
       setUsername("");
       setPassword("");
       setRole("employee");
-      Navigate("/dashboard")
+      navigate("/dashboard")
     } catch {
       toast({
         title: "Creation failed",

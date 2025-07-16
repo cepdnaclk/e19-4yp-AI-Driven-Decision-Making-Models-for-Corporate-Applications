@@ -41,21 +41,24 @@ def init_db():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id TEXT PRIMARY KEY,
+            firstname TEXT,
+            lastname TEXT,
             username TEXT UNIQUE NOT NULL,
             password TEXT NOT NULL,
+            email TEXT,
             role TEXT CHECK(role IN ('admin', 'employee', 'customer')) NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
 
-    # Seed a default super-admin if none exists
+    # Seed a default admin if none exists
     cursor.execute("SELECT * FROM users WHERE role = 'admin'")
     if not cursor.fetchone():
         import bcrypt
         admin_pw = bcrypt.hashpw("admin123".encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         cursor.execute('''
-            INSERT INTO users (id, username, password, role) VALUES (?, ?, ?, ?)
-        ''', (str(uuid.uuid4()), 'admin', admin_pw, 'admin'))
+            INSERT INTO users (id, username, password, email, role) VALUES (?, ?, ?, ?, ?)
+        ''', (str(uuid.uuid4()), 'admin', admin_pw, 'admin@gmail.com', 'admin'))
         print("✅ Default admin created. Username: admin, Password: admin123")
 
     cursor.execute('''

@@ -4,13 +4,19 @@ from app.dependencies.auth_dependencies import AuthDependencies
 from app.models.chat import LoginResponse
 import sqlite3, uuid
 from datetime import timedelta
+from pydantic import EmailStr
 
 router = APIRouter()
 
 auth_dependencies = AuthDependencies()
 
 @router.post("/register")
-def register_user(username: str = Form(...), password: str = Form(...), role: str = Form(...)):
+def register_user(
+    username: str = Form(...), 
+    password: str = Form(...), 
+    email: EmailStr = Form(...),
+    role: str = Form(...)
+):
     if role not in ["customer"]:
         raise HTTPException(status_code=400, detail="You can only self-register as a customer")
 
@@ -21,8 +27,8 @@ def register_user(username: str = Form(...), password: str = Form(...), role: st
     hashed = Auth.hash_password(password)
     try:
         cursor.execute(
-            "INSERT INTO users (id, username, password, role) VALUES (?, ?, ?, ?)",
-            (user_id, username, hashed, role),
+            "INSERT INTO users (id, username, password, email, role) VALUES (?, ?, ?, ?, ?)",
+            (user_id, username, hashed, email, role),
         )
         conn.commit()
     except sqlite3.IntegrityError:
@@ -52,8 +58,16 @@ def login(username: str = Form(...), password: str = Form(...)):
         "user_id": user_id
     }
 
-@router.post("/create-employee")
-def create_employee(username: str = Form(...), password: str = Form(...), user=Depends(auth_dependencies.require_role("admin"))):
+@router.post("/create-user")
+def create_employee(
+    username: str = Form(...), 
+    password: str = Form(...), 
+    role: str = Form(...),
+    user=Depends(auth_dependencies.require_role("admin"))
+):
+    if role not in ['employee', 'customer']:
+        raise HTTPException(status_code=400, detail="Invalid role")
+    
     conn = sqlite3.connect("agents.db")
     cursor = conn.cursor()
     user_id = str(uuid.uuid4())
@@ -61,8 +75,8 @@ def create_employee(username: str = Form(...), password: str = Form(...), user=D
     hashed = Auth.hash_password(password)
     try:
         cursor.execute(
-            "INSERT INTO users (id, username, password, role) VALUES (?, ?, ?, 'employee')",
-            (user_id, username, hashed),
+            "INSERT INTO users (id, username, password, role) VALUES (?, ?, ?, ?)",
+            (user_id, username, hashed, role),
         )
         conn.commit()
     except sqlite3.IntegrityError:
@@ -70,7 +84,7 @@ def create_employee(username: str = Form(...), password: str = Form(...), user=D
     finally:
         conn.close()
 
-    return {"message": "Employee created", "user_id": user_id}
+    return {"message": "User created", "user_id": user_id}
 
 @router.get("/users")
 async def get_users(user=Depends(auth_dependencies.require_role("admin"))):

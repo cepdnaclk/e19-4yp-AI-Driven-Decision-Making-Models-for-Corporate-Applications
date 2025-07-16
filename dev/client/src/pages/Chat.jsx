@@ -164,13 +164,13 @@ function Chat() {
   return (
     <VStack minHeight="100vh" spacing={8} p={5} background="#3182ce">
       <Box w="80%" p={8}>
-        <Button
+        {/* <Button
           leftIcon={<MdArrowBack />}
           onClick={() => navigate("/dashboard")}
           mb={6}
         >
           Back to Dashboard
-        </Button>
+        </Button> */}
 
         <Box background="white" p="10" borderRadius="10">
           <Box color="white" background="#3182ce" p="15" borderTopRadius={15}>

@@ -20,15 +20,25 @@ import { useNavigate, Link as RouterLink } from "react-router-dom";
 export default function RegisterForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
+
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
+
+    if (!validateEmail(email)) {
+      setEmailError("Please enter a valid email address");
+      return;
+    }
+    setEmailError("");
+
     setIsLoading(true);
     try {
-      await registerCustomer(username, password);
+      await registerCustomer(username, password, email);
       toast({
         title: "Registration Successful",
         description: "You can now log in.",
@@ -50,8 +60,20 @@ export default function RegisterForm() {
     }
   };
 
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
+
   return (
-    <Box minH="100vh" display="flex" alignItems="center" justifyContent="center" bg="gray.100" p={4}>
+    <Box
+      minH="100vh"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      bg="gray.100"
+      p={4}
+    >
       <Card w="100%" maxW="400px" boxShadow="lg" borderRadius="xl">
         <CardHeader textAlign="center">
           <Heading size="lg">Register</Heading>
@@ -81,6 +103,21 @@ export default function RegisterForm() {
                 />
               </FormControl>
 
+              <FormControl isRequired isInvalid={emailError !== ""}>
+                <FormLabel>Email</FormLabel>
+                <Input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                />
+                {emailError && (
+                  <Text color="red.500" fontSize="sm" mt={1}>
+                    {emailError}
+                  </Text>
+                )}
+              </FormControl>
+
               <Button colorScheme="blue" type="submit" isLoading={isLoading}>
                 Register
               </Button>
@@ -89,7 +126,12 @@ export default function RegisterForm() {
 
           <Text mt={4} fontSize="sm" textAlign="center">
             Already have an account?{" "}
-            <ChakraLink as={RouterLink} to="/login" color="blue.500" fontWeight="medium">
+            <ChakraLink
+              as={RouterLink}
+              to="/login"
+              color="blue.500"
+              fontWeight="medium"
+            >
               Login
             </ChakraLink>
           </Text>

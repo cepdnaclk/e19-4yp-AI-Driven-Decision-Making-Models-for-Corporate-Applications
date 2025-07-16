@@ -122,13 +122,13 @@ function CreateAgentForm() {
   return (
     <VStack minHeight="100vh" spacing={8} p={5} background="#3182ce">
       <Box w="60%" p={8}>
-        <Button
+        {/* <Button
           leftIcon={<MdArrowBack />}
           onClick={() => navigate("/home")}
           mb={4}
         >
           Back to Home
-        </Button>
+        </Button> */}
 
         <Box textAlign="center" color="white" mb="10">
           <Heading size="2xl" mb={3}>

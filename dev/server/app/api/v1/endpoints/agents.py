@@ -216,3 +216,21 @@ async def delete_agent(agent_id: str):
         shutil.rmtree(vector_path)
     
     return {"message": "Agent deleted successfully"}
+
+@router.delete("/{agent_id}/clear-chat")
+async def clear_chat(agent_id: str):
+    conn = sqlite3.connect('agents.db')
+    cursor = conn.cursor()
+    
+    # Check if agent exists (optional, but good practice)
+    cursor.execute("SELECT id FROM agents WHERE id = ?", (agent_id,))
+    if not cursor.fetchone():
+        conn.close()
+        raise HTTPException(status_code=404, detail="Agent not found")
+    
+    # Delete chat history for this agent
+    cursor.execute("DELETE FROM chat_history WHERE agent_id = ?", (agent_id,))
+    conn.commit()
+    conn.close()
+    
+    return {"message": "Chat history cleared successfully"}

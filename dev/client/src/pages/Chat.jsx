@@ -16,11 +16,13 @@ import {
   ModalCloseButton,
   ModalBody,
   useDisclosure,
+  Spacer,
 } from "@chakra-ui/react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import { MdAttachFile, MdEditNote } from "react-icons/md";
+import { MdAttachFile, MdEditNote, MdArrowBack } from "react-icons/md";
 import LetterForm from "../components/LetterForm";
+import ClearChatButton from "../components/ClearChatButton";
 
 function Chat() {
   const { agentId } = useParams();
@@ -34,6 +36,8 @@ function Chat() {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const messagesEndRef = useRef(null);
+
+  const [isClearing, setIsClearing] = useState(false);
 
   const token = localStorage.getItem("access_token");
   const role = localStorage.getItem("role");
@@ -59,7 +63,7 @@ function Chat() {
         const agentRes = await fetch(
           `http://localhost:8000/agents/${agentId}`,
           {
-          headers: { Authorization: `Bearer ${token}` },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
         if (!agentRes.ok) throw new Error("Unauthorized to access agent");
@@ -168,6 +172,35 @@ function Chat() {
     ]);
   };
 
+  const clearChat = async () => {
+    setIsClearing(true);
+    try {
+      const response = await fetch(
+        `http://localhost:8000/agents/${agentId}/clear-chat`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to clear chat");
+
+      // Clear frontend chat state after backend clears chat history
+      setMessages([]);
+    } catch (err) {
+      toast({
+        title: "Failed to clear chat",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setIsClearing(false);
+    }
+  };
+
   if (initialLoading) {
     return (
       <Box p={8} textAlign="center">
@@ -180,22 +213,20 @@ function Chat() {
   return (
     <VStack minHeight="100vh" spacing={8} p={5} background="#3182ce">
       <Box w="80%" p={8}>
-        {/* <Button
-          leftIcon={<MdArrowBack />}
-          onClick={() => navigate("/dashboard")}
-          mb={6}
-        >
-          Back to Dashboard
-        </Button> */}
-
         <Box background="white" p="10" borderRadius="10">
           <Box color="white" background="#3182ce" p="15" borderTopRadius={15}>
-            <Heading color="white" mb={2}>
-              Chat with {agent.name}
-            </Heading>
-            <Text mb={2} color="white.300">
-              {agent?.description}
-            </Text>
+            <HStack>
+              <Box>
+                <Heading color="white" mb={2}>
+                  Chat with {agent.name}
+                </Heading>
+                <Text mb={2} color="white.300">
+                  {agent?.description}
+                </Text>
+              </Box>
+              <Spacer />
+              <ClearChatButton onClear={clearChat} isLoading={isClearing} />
+            </HStack>
           </Box>
 
           <Box background="#f8f9f9ff" p="15">
@@ -280,7 +311,10 @@ function Chat() {
           <ModalHeader>Create Letter</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <LetterForm onClose={onClose} onLetterGenerated={handleLetterGenerated} />
+            <LetterForm
+              onClose={onClose}
+              onLetterGenerated={handleLetterGenerated}
+            />
           </ModalBody>
         </ModalContent>
       </Modal>

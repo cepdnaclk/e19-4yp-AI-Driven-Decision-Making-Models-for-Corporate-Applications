@@ -65,17 +65,26 @@ async def get_agent(agent_id: str):
     
     cursor.execute('SELECT id, name, description, tools, created_at FROM agents WHERE id = ?', (agent_id,))
     agent = cursor.fetchone()
-    conn.close()
     
     if not agent:
+        conn.close()
         raise HTTPException(status_code=404, detail="Agent not found")
     
+    cursor.execute('''
+        SELECT user_id FROM agent_assignments WHERE agent_id = ?
+    ''', (agent_id,))
+    assigned_rows = cursor.fetchall()
+    assigned_user_ids = [str(user_id) for (user_id,) in assigned_rows]
+
+    conn.close()
+
     return {
         "id": agent[0],
         "name": agent[1],
         "description": agent[2],
         "tools": json.loads(agent[3]),
-        "created_at": agent[4]
+        "created_at": agent[4],
+        "assigned_user_ids": assigned_user_ids  # 👈 Add this line
     }
 
 @router.post("/")
@@ -173,6 +182,15 @@ async def update_agent(agent_id: str, update: AgentUpdateRequest):
         SET name = ?, description = ?, tools = ?, system_prompt = ?
         WHERE id = ?
     ''', (new_name, new_description, new_tools_json, new_prompt, agent_id))
+
+    if update.assigned_user_ids is not None:
+        cursor.execute('DELETE FROM agent_assignments WHERE agent_id = ?', (agent_id,))
+        for user_id in update.assigned_user_ids:
+            assignment_id = str(uuid.uuid4())
+            cursor.execute(
+                'INSERT INTO agent_assignments (id, agent_id, user_id) VALUES (?, ?, ?)',
+                (assignment_id, agent_id, user_id)
+            )
 
     conn.commit()
     conn.close()

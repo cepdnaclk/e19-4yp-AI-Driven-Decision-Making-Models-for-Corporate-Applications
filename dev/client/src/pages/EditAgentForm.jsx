@@ -22,6 +22,8 @@ function EditAgentForm() {
   const [agentData, setAgentData] = useState(null);
   const [tools, setTools] = useState([]);
   const [selectedTools, setSelectedTools] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [selectedUserIds, setSelectedUserIds] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const toast = useToast();
@@ -44,16 +46,20 @@ function EditAgentForm() {
 
     const fetchAgent = async () => {
       try {
-        const agentRes = await fetch(`http://localhost:8000/agents/${agentId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const agentRes = await fetch(
+          `http://localhost:8000/agents/${agentId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         if (!agentRes.ok) throw new Error("Unauthorized");
 
         const agent = await agentRes.json();
         setAgentData(agent);
         setSelectedTools(agent.tools);
+        setSelectedUserIds(agent.assigned_user_ids || []);
       } catch (err) {
         console.error("Failed to fetch agent:", err);
         toast({
@@ -85,8 +91,17 @@ function EditAgentForm() {
       }
     };
 
+    const fetchUsers = async () => {
+      const userRes = await fetch("http://localhost:8000/users", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const userData = await userRes.json();
+      setUsers(userData.users || []);
+    };
+
     fetchAgent();
     fetchTools();
+    fetchUsers();
   }, [agentId]);
 
   const handleUpdate = async (e) => {
@@ -99,6 +114,7 @@ function EditAgentForm() {
       name: form.name.value,
       description: form.description.value,
       tools: selectedTools,
+      assigned_user_ids: selectedUserIds
     };
 
     try {
@@ -142,7 +158,11 @@ function EditAgentForm() {
   return (
     <VStack minHeight="100vh" spacing={8} p={5} background="#3182ce">
       <Box w="60%" p={8}>
-        <Button leftIcon={<MdArrowBack />} onClick={() => navigate("/dashboard")} mb={4}>
+        <Button
+          leftIcon={<MdArrowBack />}
+          onClick={() => navigate("/dashboard")}
+          mb={4}
+        >
           Back to Dashboard
         </Button>
 
@@ -170,12 +190,20 @@ function EditAgentForm() {
 
                 <FormControl isRequired>
                   <FormLabel>Agent Description</FormLabel>
-                  <Textarea name="description" defaultValue={agentData.description} />
+                  <Textarea
+                    name="description"
+                    defaultValue={agentData.description}
+                  />
                 </FormControl>
 
                 <FormControl>
                   <FormLabel>Available Tools</FormLabel>
-                  <SimpleGrid background="#eef1f3ff" columns={[1, 2]} spacing={2} p={3}>
+                  <SimpleGrid
+                    background="#eef1f3ff"
+                    columns={[1, 2]}
+                    spacing={2}
+                    p={3}
+                  >
                     {tools.map((tool) => (
                       <Checkbox
                         key={tool}
@@ -191,6 +219,40 @@ function EditAgentForm() {
                         }}
                       >
                         {tool.replace(/_/g, " ").toUpperCase()}
+                      </Checkbox>
+                    ))}
+                  </SimpleGrid>
+                </FormControl>
+
+                <FormControl>
+                  <FormLabel>Assign Users</FormLabel>
+                  <SimpleGrid
+                    columns={[1, 3]}
+                    spacing={2}
+                    p={2}
+                    background="#edf2f7"
+                    borderRadius="md"
+                  >
+                    {users
+                    .filter(
+                      (user) =>
+                        user.role === "employee" || user.role === "customer"
+                    )
+                    .map((user) => (
+                      <Checkbox
+                        key={user.id}
+                        value={user.id}
+                        isChecked={selectedUserIds.includes(user.id)}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setSelectedUserIds((prev) =>
+                            e.target.checked
+                              ? [...prev, value]
+                              : prev.filter((id) => id !== value)
+                          );
+                        }}
+                      >
+                        {user.name} ({user.role})
                       </Checkbox>
                     ))}
                   </SimpleGrid>

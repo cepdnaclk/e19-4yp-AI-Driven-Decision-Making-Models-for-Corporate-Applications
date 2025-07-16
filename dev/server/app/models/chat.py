@@ -22,6 +22,7 @@ class AgentUpdateRequest(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     tools: Optional[List[str]] = None
+    assigned_user_ids: Optional[List[str]] = None
 
 class UpdateProfileRequest(BaseModel):
     firstname: str | None = None

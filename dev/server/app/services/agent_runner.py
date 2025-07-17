@@ -104,7 +104,7 @@ class ReActAgent:
                 chain_type="stuff",
                 return_source_documents=True
             )
-            result = retriever_qa({"query": message})
+            result = retriever_qa.invoke({"query": message})
             answer = result.get("result", "").strip()
 
             # You can also check the similarity score or source content length here if needed

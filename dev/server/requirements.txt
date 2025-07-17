@@ -16,4 +16,7 @@ httpx
 bcrypt
 python-jose[cryptography]
 jwt
-
+pytesseract 
+# pdf2image 
+# pillow
+# opencv-python

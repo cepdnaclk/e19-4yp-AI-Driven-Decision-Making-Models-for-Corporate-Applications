@@ -165,11 +165,32 @@ function Chat() {
     toast({ title: "Document uploaded!", status: "success" });
   };
 
-  const handleLetterGenerated = (letterContent) => {
-    setMessages((prev) => [
-      ...prev,
-      { role: "assistant", content: letterContent }
-    ]);
+  const handleLetterGenerated = async (letterContent) => {
+    const assistantMessage = { role: "assistant", content: letterContent };
+
+    setMessages((prev) => [...prev, assistantMessage]);
+
+    try {
+      await fetch("http://localhost:8000/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          agent_id: agentId,
+          message: "Thank you for the genrated letter",
+          chat_history: [...messages, assistantMessage], // Updated full chat
+        }),
+      });
+    } catch (err) {
+      toast({
+        title: "Failed to store generated letter in chat history.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   };
 
   const clearChat = async () => {

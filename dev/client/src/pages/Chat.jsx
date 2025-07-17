@@ -181,9 +181,12 @@ function Chat() {
                   borderRadius="md"
                   bg={msg.role === "user" ? "gray.100" : "blue.100"}
                 >
-                  <Text>
-                    <strong>{msg.role === "user" ? "You" : agent?.name || "Agent"}:</strong>{" "}
-                    {msg.content}
+                  <Text whiteSpace="pre-line">
+                    <strong>{msg.role === "user" ? "You" : agent?.name || "Agent"}:</strong>{"\n"}
+                    {msg.content
+                      .replace(/\*\*/g, "")        // Remove all ** 
+                      .replace(/(\d+)\.\s*/g, "\n$1. ") // Add newline before numbered list items
+                    }
                   </Text>
                 </Box>
               ))}

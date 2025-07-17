@@ -92,35 +92,29 @@ class ReActAgent:
 
     # In ReActAgent
     def chat(self, message: str, chat_history: List[ChatMessage]) -> str:
-        if not self.agent_executor:
+        # Ensure agent config (retriever) is loaded
+        if not self.retriever:
             self.load_agent_config()
 
-        # Update memory with chat history
-        for msg in chat_history:
-            if msg.role == "user":
-                self.memory.chat_memory.add_user_message(msg.content)
-            elif msg.role == "assistant":
-                self.memory.chat_memory.add_ai_message(msg.content)
+        # Use retrieval-based QA only
+        if self.retriever:
+            retriever_qa = RetrievalQA.from_chain_type(
+                llm=self.llm,
+                retriever=self.retriever,
+                chain_type="stuff",
+                return_source_documents=True
+            )
+            result = retriever_qa({"query": message})
+            answer = result.get("result", "").strip()
 
-        # Execute agent
-        try:
-            response = self.agent_executor.invoke({"input": message})
-            output = response.get("output", "")
+            # You can also check the similarity score or source content length here if needed
+            if len(answer) < 30 or "I'm not sure" in answer or answer.lower().startswith("i don't know"):
+                return "Sorry, I can't provide a valid answer for that question."
             
-            # Fallback to retriever if generic output
-            if ("I'm not sure" in output or "general steps" in output or len(output) < 50) and self.retriever:
-                print("[Fallback to RetrievalQA]")
-                retriever_qa = RetrievalQA.from_chain_type(
-                    llm=self.llm,
-                    retriever=self.retriever,
-                    chain_type="stuff"
-                )
-                return retriever_qa.run(message)
-            
-            return output
+            return answer
 
-        except Exception as e:
-            return f"Error: {str(e)}"
+        return "There is no knowledge base available."
+
 
     # def chat(self, message: str, chat_history: List[ChatMessage]) -> str:
     #     if not self.agent_executor:

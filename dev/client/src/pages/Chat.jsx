@@ -24,6 +24,7 @@ function Chat() {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const messagesEndRef = useRef(null);
+  const [showWhatsappButton, setShowWhatsappButton] = useState(false);
 
   const token = localStorage.getItem("access_token");
   const role = localStorage.getItem("role");
@@ -76,6 +77,20 @@ function Chat() {
 
     fetchData();
   }, [agentId]);
+
+  useEffect(() => {
+    if (!messages || messages.length === 0) return;
+
+    const lastMessage = messages[messages.length - 1];
+    if (
+      lastMessage.role === "assistant" &&
+      lastMessage.content.includes("Sorry, I can't provide a valid answer for that question. Would you like to chat with a live agent?")
+    ) {
+      setShowWhatsappButton(true);
+    } else {
+      setShowWhatsappButton(false);
+    }
+  }, [messages]);
 
   // Scroll to latest message
   useEffect(() => {
@@ -135,6 +150,8 @@ function Chat() {
     }
   };
 
+  // console.log("showWhatsappButton", showWhatsappButton);
+
   if (initialLoading) {
     return (
       <Box p={8} textAlign="center">
@@ -192,6 +209,21 @@ function Chat() {
               ))}
               <div ref={messagesEndRef} />
             </VStack>
+            {showWhatsappButton && (
+              <Button
+                as="a"                  // this whatsapp number should be changed to the relevant number
+                href="https://wa.me/94771234567?text=Hi,%20I%20need%20some%20help%20regarding%20LEARN.%20Could%20you%20assist%20me%3F"
+                target="_blank"
+                rel="noopener noreferrer"
+                colorScheme="whatsapp"
+                leftIcon={<span>📞</span>}
+                mt={1}
+                size="md"
+                color="black"
+              >
+                Contact Live Agent on WhatsApp
+              </Button>
+            )}
           </Box>
 
           <HStack>

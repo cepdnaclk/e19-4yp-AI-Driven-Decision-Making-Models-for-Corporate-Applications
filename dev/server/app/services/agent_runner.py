@@ -109,12 +109,11 @@ class ReActAgent:
 
             # You can also check the similarity score or source content length here if needed
             if len(answer) < 30 or "I'm not sure" in answer or answer.lower().startswith("i don't know"):
-                return "Sorry, I can't provide a valid answer for that question."
+                return "Sorry, I can't provide a valid answer for that question. Would you like to chat with a live agent?"
             
             return answer
 
         return "There is no knowledge base available."
-
 
     # def chat(self, message: str, chat_history: List[ChatMessage]) -> str:
     #     if not self.agent_executor:

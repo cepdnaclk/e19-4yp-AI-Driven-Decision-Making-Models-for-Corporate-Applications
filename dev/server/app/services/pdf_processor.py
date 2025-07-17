@@ -6,6 +6,9 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 
+import pdfplumber
+import pytesseract
+
 class PDFProcessor:
     def __init__(self):
         self.text_splitter = RecursiveCharacterTextSplitter(
@@ -15,10 +18,21 @@ class PDFProcessor:
         self.embeddings = OpenAIEmbeddings()
     
     def extract_text_from_pdf(self, pdf_content: bytes) -> str:
-        pdf_reader = PyPDF2.PdfReader(BytesIO(pdf_content))
         text = ""
-        for page in pdf_reader.pages:
-            text += page.extract_text()
+
+        with pdfplumber.open(BytesIO(pdf_content)) as pdf:
+            for page in pdf.pages:
+                page_text = page.extract_text()
+                # If no text found, try OCR on that specific page
+                if not page_text or len(page_text.strip()) < 30:
+                    print("[OCR Fallback for this page]")
+                    page_image = page.to_image(resolution=300)
+                    image = page_image.original
+                    ocr_text = pytesseract.image_to_string(image)
+                    text += ocr_text + "\n"
+                else:
+                    text += page_text + "\n"
+
         return text
     
     def process_and_store_pdfs(self, pdf_files: List[bytes], agent_id: str) -> str:

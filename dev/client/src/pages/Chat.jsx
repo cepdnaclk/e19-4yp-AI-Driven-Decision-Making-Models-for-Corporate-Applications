@@ -25,7 +25,7 @@ import {
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { MdAttachFile } from "react-icons/md";
-import { FaChevronDown, FaTools } from "react-icons/fa";
+import { FaTools } from "react-icons/fa";
 import { RiAiGenerateText } from "react-icons/ri";
 import LetterForm from "../components/LetterForm";
 import ClearChatButton from "../components/ClearChatButton";
@@ -42,6 +42,7 @@ function Chat() {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const messagesEndRef = useRef(null);
+  const [showWhatsappButton, setShowWhatsappButton] = useState(false);
 
   const [isClearing, setIsClearing] = useState(false);
 
@@ -99,6 +100,20 @@ function Chat() {
 
     fetchData();
   }, [agentId]);
+
+    useEffect(() => {
+    if (!messages || messages.length === 0) return;
+
+    const lastMessage = messages[messages.length - 1];
+    if (
+      lastMessage.role === "assistant" &&
+      lastMessage.content.includes("Sorry, I can't provide a valid answer for that question. Would you like to chat with a live agent?")
+    ) {
+      setShowWhatsappButton(true);
+    } else {
+      setShowWhatsappButton(false);
+    }
+  }, [messages]);
 
   // Scroll to latest message
   useEffect(() => {
@@ -279,16 +294,33 @@ function Chat() {
                   borderRadius="md"
                   bg={msg.role === "user" ? "gray.100" : "blue.100"}
                 >
-                  <Text>
-                    <strong>
-                      {msg.role === "user" ? "You" : agent?.name || "Agent"}:
-                    </strong>{" "}
-                    {msg.content}
+                  <Text whiteSpace="pre-line">
+                    <strong>{msg.role === "user" ? "You" : agent?.name || "Agent"}:</strong>{"\n"}
+                    {msg.content
+                      .replace(/\*\*/g, "")        // Remove all ** 
+                      .replace(/(\d+)\.\s*/g, "\n$1. ") // Add newline before numbered list items
+                    }
                   </Text>
                 </Box>
               ))}
               <div ref={messagesEndRef} />
             </VStack>
+            {/* WhatsApp Button for live agent */}
+            {showWhatsappButton && (
+              <Button
+                as="a"
+                href="https://wa.me/94771234567?text=Hi,%20I%20need%20some%20help%20regarding%20LEARN.%20Could%20you%20assist%20me%3F"
+                target="_blank"
+                rel="noopener noreferrer"
+                colorScheme="whatsapp"
+                leftIcon={<img src="/whatsapp.svg" alt="WhatsApp" width="20" height="20" />}
+                mt={1}
+                size="md"
+                color="black"
+              >
+                Contact Live Agent on WhatsApp
+              </Button>
+            )}
           </Box>
 
           <HStack spacing={2}>

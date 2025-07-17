@@ -4,6 +4,7 @@ python-multipart
 pydantic
 aiofiles
 PyPDF2
+pdfplumber
 faiss-cpu
 numpy
 python-dotenv

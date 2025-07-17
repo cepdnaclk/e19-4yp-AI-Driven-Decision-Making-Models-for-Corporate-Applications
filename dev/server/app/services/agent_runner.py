@@ -7,6 +7,8 @@ from langchain_community.vectorstores import FAISS
 from langchain.agents import initialize_agent, AgentType
 from langchain.memory import ConversationBufferMemory
 from langchain.tools import Tool
+from langchain.chains import RetrievalQA
+from langchain.tools import tool
 
 from app.services.tools_repo import ToolsRepository
 from app.services.pdf_processor import PDFProcessor
@@ -46,14 +48,23 @@ class ReActAgent:
             vectorstore = FAISS.load_local(vector_index_path, pdf_processor.embeddings, allow_dangerous_deserialization=True)
             self.retriever = vectorstore.as_retriever()
 
-            retrieval_tool = Tool(
-                name="knowledge_retriever",
-                description="Retrieve relevant information from knowledge base",
-                func=self._retrieve_knowledge
-            )
-            tools.append(retrieval_tool)
+            # retrieval_tool = Tool(
+            #     name="knowledge_retriever",
+            #     description="Retrieve relevant information from knowledge base",
+            #     func=self._retrieve_knowledge
+            # )
+            # tools.append(retrieval_tool)
+            @tool
+            def knowledge_retriever(query: str) -> str:
+                """Retrieve relevant information from the uploaded company PDFs based on the user's question."""
+                if self.retriever:
+                    docs = self.retriever.get_relevant_documents(query)
+                    return "\n\n".join([doc.page_content for doc in docs[:3]])
+                return "No knowledge base available."
 
-        # ✅ Create agent using OpenAI Functions agent type
+            tools.append(knowledge_retriever)
+
+        # Create agent using OpenAI Functions agent type
         self.agent_executor = initialize_agent(
             tools=tools,
             llm=self.llm,
@@ -68,27 +79,67 @@ class ReActAgent:
     def _retrieve_knowledge(self, query: str) -> str:
         if self.retriever:
             docs = self.retriever.get_relevant_documents(query)
-            return "\n".join([doc.page_content for doc in docs[:3]])
-        return "No knowledge base available"
+            for i, doc in enumerate(docs):
+                print(f"[Retriever Doc {i+1}]\n{doc.page_content[:300]}\n")
+            return "\n\n".join([doc.page_content for doc in docs[:3]])
+        return "No knowledge base available."
 
+    # def _retrieve_knowledge(self, query: str) -> str:
+    #     if self.retriever:
+    #         docs = self.retriever.get_relevant_documents(query)
+    #         return "\n".join([doc.page_content for doc in docs[:3]])
+    #     return "No knowledge base available"
+
+    # In ReActAgent
     def chat(self, message: str, chat_history: List[ChatMessage]) -> str:
         if not self.agent_executor:
             self.load_agent_config()
 
-        # Update memory
+        # Update memory with chat history
         for msg in chat_history:
             if msg.role == "user":
                 self.memory.chat_memory.add_user_message(msg.content)
             elif msg.role == "assistant":
                 self.memory.chat_memory.add_ai_message(msg.content)
 
+        # Execute agent
         try:
             response = self.agent_executor.invoke({"input": message})
-            return response.get("output", "I couldn't process your request.")
+            output = response.get("output", "")
+            
+            # Fallback to retriever if generic output
+            if ("I'm not sure" in output or "general steps" in output or len(output) < 50) and self.retriever:
+                print("[Fallback to RetrievalQA]")
+                retriever_qa = RetrievalQA.from_chain_type(
+                    llm=self.llm,
+                    retriever=self.retriever,
+                    chain_type="stuff"
+                )
+                return retriever_qa.run(message)
+            
+            return output
+
         except Exception as e:
             return f"Error: {str(e)}"
 
+    # def chat(self, message: str, chat_history: List[ChatMessage]) -> str:
+    #     if not self.agent_executor:
+    #         self.load_agent_config()
 
+    #     # Update memory
+    #     for msg in chat_history:
+    #         if msg.role == "user":
+    #             self.memory.chat_memory.add_user_message(msg.content)
+    #         elif msg.role == "assistant":
+    #             self.memory.chat_memory.add_ai_message(msg.content)
+
+    #     try:
+    #         response = self.agent_executor.invoke({"input": message})
+    #         return response.get("output", "I couldn't process your request.")
+    #     except Exception as e:
+    #         return f"Error: {str(e)}"
+
+    @staticmethod
     def get_assigned_agents(user_id: str) -> List[str]:
         conn = sqlite3.connect('agents.db')
         cursor = conn.cursor()

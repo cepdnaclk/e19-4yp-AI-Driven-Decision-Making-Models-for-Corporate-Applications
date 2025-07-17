@@ -45,9 +45,9 @@ class ToolsRepository:
     
     def _file_reader(self, file_path: str) -> str:
         try:
-            with open(file_path, 'r') as f:
+            with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
-            return f"File content: {content[:500]}..."
+            return f"File content: {content}..."
         except Exception as e:
             return f"Error reading file: {str(e)}"
     

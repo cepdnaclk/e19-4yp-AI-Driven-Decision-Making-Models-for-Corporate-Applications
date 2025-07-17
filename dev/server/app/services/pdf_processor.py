@@ -2,6 +2,7 @@ from typing import List
 from io import BytesIO
 import os
 import PyPDF2
+import pdfplumber
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
@@ -15,11 +16,16 @@ class PDFProcessor:
         self.embeddings = OpenAIEmbeddings()
     
     def extract_text_from_pdf(self, pdf_content: bytes) -> str:
-        pdf_reader = PyPDF2.PdfReader(BytesIO(pdf_content))
         text = ""
-        for page in pdf_reader.pages:
-            text += page.extract_text()
+        with pdfplumber.open(BytesIO(pdf_content)) as pdf:
+            for page in pdf.pages:
+                text += page.extract_text() or ""
         return text
+        # pdf_reader = PyPDF2.PdfReader(BytesIO(pdf_content))
+        # text = ""
+        # for page in pdf_reader.pages:
+        #     text += page.extract_text()
+        # return text
     
     def process_and_store_pdfs(self, pdf_files: List[bytes], agent_id: str) -> str:
         all_texts = []

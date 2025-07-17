@@ -46,7 +46,7 @@ function Chat() {
   const [isClearing, setIsClearing] = useState(false);
 
   const token = localStorage.getItem("access_token");
-  const role = localStorage.getItem("role");
+  const currentUserRole = localStorage.getItem("role");
 
   // Fetch agent details and chat history
   useEffect(() => {
@@ -363,6 +363,7 @@ function Chat() {
             <LetterForm
               onClose={onClose}
               onLetterGenerated={handleLetterGenerated}
+              userRole={currentUserRole}
             />
           </ModalBody>
         </ModalContent>

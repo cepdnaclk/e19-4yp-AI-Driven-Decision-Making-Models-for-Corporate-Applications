@@ -12,30 +12,32 @@ import {
 import { useState } from "react";
 
 const templateFields = {
+  leave: [
+    { name: "managerName", label: "Manager's Name" },
+    { name: "leaveType", label: "Leave Type" },
+    { name: "numberOfDays", label: "No. of Days" },
+    { name: "startDate", label: "Start Date" },
+    { name: "endDate", label: "End Date" },
+    { name: "reason", label: "Reason", textarea: true },
+    { name: "employeeName", label: "Employee Name" },
+  ],
   offer: [
     { name: "candidateName", label: "Candidate's Name" },
     { name: "jobRole", label: "Job Role" },
     { name: "startDate", label: "Start Date" },
     { name: "department", label: "Department" },
     { name: "salary", label: "Salary" },
-    { name: "notes", label: "Additional Notes", textarea: true, optional: true },
   ],
   rejection: [
     { name: "candidateName", label: "Candidate's Name" },
     { name: "jobRole", label: "Job Role" },
     { name: "rejectionReason", label: "Rejection Reason", textarea: true },
   ],
-  // onboarding: [
-  //   { name: "candidateName", label: "Candidate's Name" },
-  //   { name: "startDate", label: "Start Date" },
-  //   { name: "orientationTime", label: "Orientation Time" },
-  //   { name: "location", label: "Location" },
-  // ],
 };
 
-function LetterForm({ onClose, onLetterGenerated }) {
+function LetterForm({ onClose, onLetterGenerated, userRole }) {
   const toast = useToast();
-  const [templateType, setTemplateType] = useState("offer");
+  const [templateType, setTemplateType] = useState("leave");
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -62,7 +64,7 @@ function LetterForm({ onClose, onLetterGenerated }) {
 
       const data = await res.json();
       if (res.ok) {
-        onLetterGenerated(data.content); 
+        onLetterGenerated(data.content);
         toast({ title: "Letter Generated", status: "success" });
         onClose(); // close the form
       } else {
@@ -78,7 +80,15 @@ function LetterForm({ onClose, onLetterGenerated }) {
   const fields = templateFields[templateType] || [];
 
   return (
-    <Box p={5} bg="white" borderRadius="md" shadow="md">
+    <Box
+      p={5}
+      bg="white"
+      borderRadius="md"
+      shadow="md"
+      maxH="75vh"
+      overflowY="auto"
+      w="100%"
+    >
       <VStack spacing={2} align="stretch">
         <FormControl>
           <FormLabel>Template Type</FormLabel>
@@ -89,9 +99,14 @@ function LetterForm({ onClose, onLetterGenerated }) {
               setFormData({});
             }}
           >
-            <option value="offer">Offer Letter</option>
-            <option value="rejection">Rejection Letter</option>
-            {/* <option value="onboarding">Onboarding Letter</option> */}
+            <option value="leave">Leave Application</option>
+
+            {userRole !== "customer" && (
+              <>
+                <option value="offer">Offer Letter</option>
+                <option value="rejection">Rejection Letter</option>
+              </>
+            )}
           </Select>
         </FormControl>
 

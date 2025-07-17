@@ -9,6 +9,10 @@ import {
   useToast,
   Spinner,
   IconButton,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverBody,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -20,7 +24,9 @@ import {
 } from "@chakra-ui/react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import { MdAttachFile, MdEditNote, MdArrowBack } from "react-icons/md";
+import { MdAttachFile } from "react-icons/md";
+import { FaChevronDown, FaTools } from "react-icons/fa";
+import { RiAiGenerateText } from "react-icons/ri";
 import LetterForm from "../components/LetterForm";
 import ClearChatButton from "../components/ClearChatButton";
 
@@ -286,23 +292,45 @@ function Chat() {
           </Box>
 
           <HStack spacing={2}>
-            <IconButton
-              icon={<MdAttachFile />}
-              onClick={() => document.getElementById("fileInput").click()}
-              aria-label="Attach file"
-            />
+            <Popover placement="top-start">
+              <PopoverTrigger>
+                <IconButton
+                  icon={<FaTools />}
+                  aria-label="Options"
+                  variant="outline"
+                />
+              </PopoverTrigger>
+              <PopoverContent width="fit-content">
+                <PopoverBody>
+                  <VStack align="start" spacing={2}>
+                    <Button
+                      leftIcon={<MdAttachFile />}
+                      size="sm"
+                      variant="ghost"
+                      onClick={() =>
+                        document.getElementById("fileInput").click()
+                      }
+                    >
+                      Attach Files
+                    </Button>
+                    <Button
+                      leftIcon={<RiAiGenerateText />}
+                      size="sm"
+                      variant="ghost"
+                      onClick={onOpen}
+                    >
+                      Generate Letters
+                    </Button>
+                  </VStack>
+                </PopoverBody>
+              </PopoverContent>
+            </Popover>
             <input
               id="fileInput"
               type="file"
               accept="application/pdf"
               style={{ display: "none" }}
               onChange={handleFileUpload}
-            />
-            <IconButton
-              icon={<MdEditNote />}
-              onClick={onOpen}
-              aria-label="Create letter"
-              title="Create letter"
             />
             <Input
               placeholder="Type your message..."

@@ -27,7 +27,7 @@ import { useState, useEffect, useRef } from "react";
 import { MdAttachFile } from "react-icons/md";
 import { FaTools } from "react-icons/fa";
 import { RiAiGenerateText } from "react-icons/ri";
-import LetterForm from "../components/LetterForm";
+import TemplateForm from "../components/TemplateForm";
 import ClearChatButton from "../components/ClearChatButton";
 
 function Chat() {
@@ -101,13 +101,35 @@ function Chat() {
     fetchData();
   }, [agentId]);
 
-    useEffect(() => {
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch("http://localhost:8000/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setEmailFrom(data.email);
+        }
+      } catch (err) {
+        console.error("Failed to fetch user email");
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  useEffect(() => {
     if (!messages || messages.length === 0) return;
 
     const lastMessage = messages[messages.length - 1];
     if (
       lastMessage.role === "assistant" &&
-      lastMessage.content.includes("Sorry, I can't provide a valid answer for that question. Would you like to chat with a live agent?")
+      lastMessage.content.includes(
+        "Sorry, I can't provide a valid answer for that question. Would you like to chat with a live agent?"
+      )
     ) {
       setShowWhatsappButton(true);
     } else {
@@ -188,25 +210,42 @@ function Chat() {
 
   const handleLetterGenerated = async (letterContent) => {
     const assistantMessage = { role: "assistant", content: letterContent };
+    const updatedMessages = [...messages, assistantMessage];
 
-    setMessages((prev) => [...prev, assistantMessage]);
+    setMessages(updatedMessages);
 
     try {
-      await fetch("http://localhost:8000/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          agent_id: agentId,
-          message: "Thank you for the genrated letter",
-          chat_history: [...messages, assistantMessage], // Updated full chat
-        }),
+      const response = await fetch(
+        `http://localhost:8000/letters/${agentId}/store-generated-message`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            content: letterContent,
+            history: messages, // send current history before this message
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to store generated letter");
+      }
+
+      const data = await response.json();
+      setMessages(data.chat_history); // updated history returned from backend
+      toast({
+        title: "Letter stored successfully",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
       });
     } catch (err) {
+      console.error("Failed to store letter:", err);
       toast({
-        title: "Failed to store generated letter in chat history.",
+        title: "Failed to store generated letter",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -295,10 +334,14 @@ function Chat() {
                   bg={msg.role === "user" ? "gray.100" : "blue.100"}
                 >
                   <Text whiteSpace="pre-line">
-                    <strong>{msg.role === "user" ? "You" : agent?.name || "Agent"}:</strong>{"\n"}
-                    {msg.content
-                      .replace(/\*\*/g, "")        // Remove all ** 
-                      .replace(/(\d+)\.\s*/g, "\n$1. ") // Add newline before numbered list items
+                    <strong>
+                      {msg.role === "user" ? "You" : agent?.name || "Agent"}:
+                    </strong>
+                    {"\n"}
+                    {
+                      msg.content
+                        .replace(/\*\*/g, "") // Remove all **
+                        .replace(/(\d+)\.\s*/g, "\n$1. ") // Add newline before numbered list items
                     }
                   </Text>
                 </Box>
@@ -313,7 +356,14 @@ function Chat() {
                 target="_blank"
                 rel="noopener noreferrer"
                 colorScheme="whatsapp"
-                leftIcon={<img src="/whatsapp.svg" alt="WhatsApp" width="20" height="20" />}
+                leftIcon={
+                  <img
+                    src="/whatsapp.svg"
+                    alt="WhatsApp"
+                    width="20"
+                    height="20"
+                  />
+                }
                 mt={1}
                 size="md"
                 color="black"
@@ -351,7 +401,7 @@ function Chat() {
                       variant="ghost"
                       onClick={onOpen}
                     >
-                      Generate Letters
+                      Generate Templates
                     </Button>
                   </VStack>
                 </PopoverBody>
@@ -389,10 +439,10 @@ function Chat() {
       <Modal isOpen={isOpen} onClose={onClose} size="lg">
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Create Letter</ModalHeader>
+          <ModalHeader>Create Templates</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <LetterForm
+            <TemplateForm
               onClose={onClose}
               onLetterGenerated={handleLetterGenerated}
               userRole={currentUserRole}

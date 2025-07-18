@@ -12,6 +12,12 @@ import {
 import { useState } from "react";
 
 const templateFields = {
+  email: [
+    { name: "recepientEmail", label: "Recepient's Email" },
+    { name: "recepientName", label: "Recepient's Name" },
+    { name: "subject", label: "Subject" },
+    { name: "body", label: "Body", textarea: true },
+  ],
   leave: [
     { name: "managerName", label: "Manager's Name" },
     { name: "leaveType", label: "Leave Type" },
@@ -35,9 +41,9 @@ const templateFields = {
   ],
 };
 
-function LetterForm({ onClose, onLetterGenerated, userRole }) {
+function TemplateForm({ onClose, onLetterGenerated, userRole }) {
   const toast = useToast();
-  const [templateType, setTemplateType] = useState("leave");
+  const [templateType, setTemplateType] = useState("email");
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -66,7 +72,7 @@ function LetterForm({ onClose, onLetterGenerated, userRole }) {
       if (res.ok) {
         onLetterGenerated(data.content);
         toast({ title: "Letter Generated", status: "success" });
-        onClose(); // close the form
+        onClose();
       } else {
         toast({ title: "Error", description: data.detail, status: "error" });
       }
@@ -99,6 +105,7 @@ function LetterForm({ onClose, onLetterGenerated, userRole }) {
               setFormData({});
             }}
           >
+            <option value="email">Email Application</option>
             <option value="leave">Leave Application</option>
 
             {userRole !== "customer" && (
@@ -130,11 +137,11 @@ function LetterForm({ onClose, onLetterGenerated, userRole }) {
         ))}
 
         <Button colorScheme="blue" onClick={handleSubmit} isLoading={loading}>
-          Generate Letter
+          Generate Template
         </Button>
       </VStack>
     </Box>
   );
 }
 
-export default LetterForm;
+export default TemplateForm;

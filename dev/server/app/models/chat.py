@@ -31,12 +31,16 @@ class UpdateProfileRequest(BaseModel):
     old_password: str | None = None
     new_password: str | None = None
 
-class LetterRequest(BaseModel):
+class TemplateRequest(BaseModel):
     template_type: str
     fields: Dict[str, Any]
 
-class LetterResponse(BaseModel):
+class TemplateResponse(BaseModel):
     content: str
+
+class GeneratedMessageRequest(BaseModel):
+    content: str
+    history: List[ChatMessage] = []
 
 class LoginResponse(BaseModel):
     access_token: str

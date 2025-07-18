@@ -1,15 +1,19 @@
 from fastapi import APIRouter, HTTPException, UploadFile, File, Depends
 from app.services.rag_engine import get_or_create_agent
 from app.services.agent_runner import ReActAgent
+from app.services.pdf_processor import PDFProcessor
 from app.dependencies.auth_dependencies import AuthDependencies
 from app.models.chat import ChatRequest
 from app.models.chat import ChatMessage
+from langchain_community.vectorstores import FAISS
+from typing import List
 from datetime import datetime
-import sqlite3, json
+import sqlite3, json, os
 
 router = APIRouter()
 
 auth_dependencies = AuthDependencies()
+pdf_processor = PDFProcessor()
 
 @router.post("/")
 async def chat_with_agent(
@@ -82,23 +86,52 @@ async def get_chat_history(agent_id: str, user=Depends(auth_dependencies.get_cur
         return {"chat_history": []}
 
 @router.post("/{agent_id}/upload")
-async def upload_chat_file(
+async def upload_multiple_files(
     agent_id: str,
-    file: UploadFile = File(...),
+    files: List[UploadFile] = File(...),
     user: dict = Depends(auth_dependencies.get_current_user),
 ):
     user_id = user["sub"]
     if not user_id:
         raise HTTPException(status_code=401, detail="user_id missing in token")
-    
-    temp_path = f"./temp_chat_uploads/{user_id}_{file.filename}"
-    
-    with open(temp_path, "wb") as f:
-        f.write(await file.read())
-    
-    # Get or create agent for this user & agent_id
-    agent = get_or_create_agent(agent_id, user_id)
-    
-    agent.append_pdf_to_temp_retriever(temp_path)
-    
-    return {"message": "PDF added to session retriever."}
+
+    all_chunks = []
+
+    for file in files:
+        pdf_content = await file.read()
+        text = pdf_processor.extract_text_from_pdf(pdf_content)
+        chunks = pdf_processor.text_splitter.split_text(text)
+        all_chunks.extend(chunks)
+
+    if not all_chunks:
+        raise HTTPException(status_code=400, detail="No valid text found in PDFs.")
+
+    index_path = f"data/vectors/{agent_id}"
+
+    # ✅ Check if an index already exists for this agent
+    if os.path.exists(index_path):
+        vectorstore = FAISS.load_local(
+            index_path,
+            pdf_processor.embeddings,
+            allow_dangerous_deserialization=True
+        )
+        vectorstore.add_texts(all_chunks)
+    else:
+        vectorstore = FAISS.from_texts(all_chunks, pdf_processor.embeddings)
+
+    # ✅ Save (or overwrite) the updated index
+    vectorstore.save_local(index_path)
+
+    # Update DB if needed (optional, since path stays same)
+    conn = sqlite3.connect('agents.db')
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE agents SET vector_index_path = ? WHERE id = ?",
+        (index_path, agent_id)
+    )
+    conn.commit()
+    conn.close()
+
+    return {"message": f"{len(files)} PDFs processed and added to existing retriever."}
+
+

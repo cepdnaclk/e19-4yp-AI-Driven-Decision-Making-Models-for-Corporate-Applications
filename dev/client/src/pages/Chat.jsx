@@ -196,16 +196,46 @@ function Chat() {
   };
 
   const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
+    const selectedFiles = Array.from(e.target.files);
     const formData = new FormData();
-    formData.append("file", file);
 
-    await fetch(`http://localhost:8000/chat/${agentId}/upload`, {
-      method: "POST",
-      body: formData,
+    selectedFiles.forEach((file) => {
+      formData.append("files", file);
     });
 
-    toast({ title: "Document uploaded!", status: "success" });
+    try {
+      const res = await fetch(`http://localhost:8000/chat/${agentId}/upload`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error("Upload failed");
+
+      const data = await res.json();
+
+      const uploadedFilenames =
+        data.uploadedFiles || selectedFiles.map((f) => f.name);
+      const uploadedMsg = `Uploaded: ${uploadedFilenames.join(", ")}`;
+
+      // ✅ Add system message to chat
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "system",
+          content: uploadedMsg,
+        },
+      ]);
+
+      toast({ title: "Documents uploaded successfully", status: "success" });
+
+      if (onClose) onClose();
+
+    } catch (err) {
+      toast({ title: "Upload failed", status: "error" });
+    }
   };
 
   const handleLetterGenerated = async (letterContent) => {
@@ -348,6 +378,7 @@ function Chat() {
               ))}
               <div ref={messagesEndRef} />
             </VStack>
+
             {/* WhatsApp Button for live agent */}
             {showWhatsappButton && (
               <Button
@@ -411,8 +442,9 @@ function Chat() {
               id="fileInput"
               type="file"
               accept="application/pdf"
+              multiple
               style={{ display: "none" }}
-              onChange={handleFileUpload}
+              onChange={(e) => handleFileUpload(e, onClose)}
             />
             <Input
               placeholder="Type your message..."

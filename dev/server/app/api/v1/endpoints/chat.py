@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, UploadFile, File, Depends
-from app.services.rag_engine import get_or_create_agent
+from app.services.rag_engine import get_or_create_agent, agent_pool
 from app.services.agent_runner import ReActAgent
 from app.services.pdf_processor import PDFProcessor
 from app.dependencies.auth_dependencies import AuthDependencies
@@ -131,6 +131,8 @@ async def upload_multiple_files(
     )
     conn.commit()
     conn.close()
+
+    agent_pool.pop((agent_id, user_id), None)
 
     return {"message": f"{len(files)} PDFs processed and added to existing retriever."}
 

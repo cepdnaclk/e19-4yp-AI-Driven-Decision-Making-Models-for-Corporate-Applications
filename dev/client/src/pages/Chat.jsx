@@ -196,7 +196,9 @@ function Chat() {
     }
   };
 
-  const handleFileUpload = async (e) => {
+  const handleFileUpload = async (e, closePopover) => {
+    if (closePopover) closePopover();
+
     const selectedFiles = Array.from(e.target.files);
     const formData = new FormData();
 
@@ -231,8 +233,6 @@ function Chat() {
       ]);
 
       toast({ title: "Documents uploaded successfully", status: "success" });
-
-      if (onClose) onClose();
 
     } catch (err) {
       toast({ title: "Upload failed", status: "error" });

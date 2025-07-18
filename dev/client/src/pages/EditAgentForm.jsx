@@ -158,14 +158,6 @@ function EditAgentForm() {
   return (
     <VStack minHeight="100vh" spacing={8} p={5} background="#3182ce">
       <Box w="60%" p={8}>
-        <Button
-          leftIcon={<MdArrowBack />}
-          onClick={() => navigate("/dashboard")}
-          mb={4}
-        >
-          Back to Dashboard
-        </Button>
-
         <Box textAlign="center" color="white" mb="10">
           <Heading size="2xl" mb={3}>
             Edit Agent

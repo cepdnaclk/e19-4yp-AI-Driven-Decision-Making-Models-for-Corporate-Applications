@@ -22,6 +22,7 @@ import {
   useDisclosure,
   Spacer,
 } from "@chakra-ui/react";
+import jsPDF from "jspdf";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { MdAttachFile } from "react-icons/md";
@@ -218,7 +219,7 @@ function Chat() {
 
       const uploadedFilenames =
         data.uploadedFiles || selectedFiles.map((f) => f.name);
-      const uploadedMsg = `Uploaded: ${uploadedFilenames.join(", ")}`;
+      const uploadedMsg = `Uploaded: 📄 ${uploadedFilenames.join(", ")}`;
 
       // ✅ Add system message to chat
       setMessages((prev) => [
@@ -243,6 +244,12 @@ function Chat() {
     const updatedMessages = [...messages, assistantMessage];
 
     setMessages(updatedMessages);
+
+    // Trigger download as PDF
+    const doc = new jsPDF();
+    const splitText = doc.splitTextToSize(letterContent, 180); // 180mm wide block
+    doc.text(splitText, 10, 10);
+    doc.save("generated_letter.pdf"); // download file
 
     try {
       const response = await fetch(

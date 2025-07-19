@@ -2,7 +2,6 @@ from fastapi import APIRouter, HTTPException, Depends
 from app.dependencies.auth_dependencies import AuthDependencies
 from app.models.chat import TemplateRequest, TemplateResponse
 from app.services.agent_runner import ReActAgent
-from app.fill_pdf.offer_lletter import fill_offer_letter
 from app.models.chat import GeneratedMessageRequest, ChatMessage
 from app.services.rag_engine import get_or_create_agent
 from app.templates.letter_templates import TEMPLATES
@@ -23,11 +22,9 @@ def generate_template(
 
     try:
         content = template.format(**data.fields)
-        filled_pdf_path = fill_offer_letter(content)
 
         return {
             "content": content,
-            "pdf_url": f"/download/{filled_pdf_path.split('/')[-1]}"
         }
     except KeyError as e:
         raise HTTPException(status_code=400, detail=f"Missing required field: {str(e)}")

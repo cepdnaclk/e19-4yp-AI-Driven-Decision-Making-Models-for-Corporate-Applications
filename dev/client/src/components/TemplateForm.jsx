@@ -12,13 +12,7 @@ import {
 import { useState } from "react";
 
 const templateFields = {
-  email: [
-    { name: "recepientEmail", label: "Recepient's Email" },
-    { name: "recepientName", label: "Recepient's Name" },
-    { name: "subject", label: "Subject" },
-    { name: "body", label: "Body", textarea: true },
-  ],
-  leave: [
+    leave_apply: [
     { name: "managerName", label: "Manager's Name" },
     { name: "leaveType", label: "Leave Type" },
     { name: "numberOfDays", label: "No. of Days" },
@@ -28,7 +22,7 @@ const templateFields = {
     { name: "employeeName", label: "Employee Name" },
   ],
   offer_letter: [
-    { name: "date", label: "Date" },
+    { name: "date", label: "Today Date" },
     { name: "fullName", label: "Full Name" },
     { name: "address", label: "Address" },
     { name: "salutation", label: "Salutation" },
@@ -40,16 +34,24 @@ const templateFields = {
     { name: "fixedAllowance", label: "Fixed Allowance" },
     { name: "reportingDate", label: "Report Date" },
   ],
-  rejection: [
-    { name: "candidateName", label: "Candidate's Name" },
-    { name: "jobRole", label: "Job Role" },
-    { name: "rejectionReason", label: "Rejection Reason", textarea: true },
+  confirmation_letter: [
+    { name: "date", label: "Today Date" },
+    { name: "fullName", label: "Full Name" },
+    { name: "address", label: "Address" },
+    { name: "salutation", label: "Salutation" },
+    { name: "firstname", label: "First Name" },
+    { name: "designation", label: "Designation" },
+    { name: "effectiveDate", label: "Effective From" },
+    { name: "boardNo", label: "Board No." },
+    { name: "meetingDate", label: "Date of Meeting" },
+    { name: "basicSalary", label: "Basic Salary" },
+    { name: "allowance", label: "Allowance" },
   ],
 };
 
 function TemplateForm({ onClose, onLetterGenerated, userRole }) {
   const toast = useToast();
-  const [templateType, setTemplateType] = useState("email");
+  const [templateType, setTemplateType] = useState("leave_apply");
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -111,13 +113,13 @@ function TemplateForm({ onClose, onLetterGenerated, userRole }) {
               setFormData({});
             }}
           >
-            <option value="email">Email Application</option>
-            <option value="leave">Leave Application</option>
+            
+            <option value="leave_apply">Leave Application</option>
 
             {userRole !== "customer" && (
               <>
                 <option value="offer_letter">Offer Letter</option>
-                <option value="rejection">Rejection Letter</option>
+                <option value="confirmation_letter">Confirmation Letter</option>
               </>
             )}
           </Select>

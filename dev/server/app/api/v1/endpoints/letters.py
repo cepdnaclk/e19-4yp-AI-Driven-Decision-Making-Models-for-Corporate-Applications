@@ -22,12 +22,12 @@ def generate_template(
 
     try:
         content = template.format(**data.fields)
-        return {"content": content}
+
+        return {
+            "content": content,
+        }
     except KeyError as e:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Missing required field for template: {str(e)}"
-        )
+        raise HTTPException(status_code=400, detail=f"Missing required field: {str(e)}")
     
 @router.post("/{agent_id}/store-generated-message")
 async def store_generated_message(

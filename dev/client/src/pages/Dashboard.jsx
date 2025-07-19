@@ -126,7 +126,7 @@ function Dashboard() {
                 <Button
                   leftIcon={<MdAdd />}
                   onClick={() => navigate("/create-user")}
-                  colorScheme="green"
+                  colorScheme="blue"
                 >
                   Create New User
                 </Button>
@@ -134,7 +134,7 @@ function Dashboard() {
                 <Button
                   leftIcon={<MdAdd />}
                   onClick={() => navigate("/create-agent")}
-                  colorScheme="green"
+                  colorScheme="blue"
                 >
                   Create New Agent
                 </Button>

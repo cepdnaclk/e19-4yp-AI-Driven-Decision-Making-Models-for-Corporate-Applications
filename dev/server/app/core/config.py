@@ -58,7 +58,7 @@ def init_db():
         admin_pw = bcrypt.hashpw("admin123".encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         cursor.execute('''
             INSERT INTO users (id, username, password, email, role) VALUES (?, ?, ?, ?, ?)
-        ''', (str(uuid.uuid4()), 'admin', admin_pw, 'admin@gmail.com', 'admin'))
+        ''', (str(uuid.uuid4()), 'admin', admin_pw, 'admin@learn.com', 'admin'))
         print("✅ Default admin created. Username: admin, Password: admin123")
 
     cursor.execute('''

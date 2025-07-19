@@ -5,43 +5,37 @@ from typing import List
 class ToolsRepository:
     def __init__(self):
         self.tools = {
-            "web_search": Tool(
-                name="web_search",
-                description="Search the web for current information",
-                func=self._web_search
-            ),
-            "calculator": Tool(
-                name="calculator",
-                description="Perform mathematical calculations",
-                func=self._calculator
-            ),
             "file_reader": Tool(
                 name="file_reader",
                 description="Read and analyze files",
                 func=self._file_reader
+            ),
+            "template_generator": Tool(
+                name="template_generator",
+                description="Generate templates from user input",
+                func=self._template_generator
             ),
             "email_sender": Tool(
                 name="email_sender",
                 description="Send emails. Input should be a JSON string with recipient, subject, and body fields. Example: {\"recipient\": \"user@example.com\", \"subject\": \"Hello\", \"body\": \"Message content\"}",
                 func=self._email_sender
             ),
+            "web_search": Tool(
+                name="web_search",
+                description="Search the web for current information",
+                func=self._web_search
+            ),
             "data_analyzer": Tool(
                 name="data_analyzer",
                 description="Analyze data and generate insights",
                 func=self._data_analyzer
+            ),
+            "calculator": Tool(
+                name="calculator",
+                description="Perform mathematical calculations",
+                func=self._calculator
             )
         }
-    
-    def _web_search(self, query: str) -> str:
-        # Placeholder for web search implementation
-        return f"Web search results for: {query}"
-    
-    def _calculator(self, expression: str) -> str:
-        try:
-            result = eval(expression)
-            return f"Result: {result}"
-        except Exception as e:
-            return f"Error in calculation: {str(e)}"
     
     def _file_reader(self, file_path: str) -> str:
         try:
@@ -50,7 +44,7 @@ class ToolsRepository:
             return f"File content: {content[:500]}..."
         except Exception as e:
             return f"Error reading file: {str(e)}"
-    
+        
     def _email_sender(self, input_str: str) -> str:
         try:
             # Parse the input JSON string
@@ -68,6 +62,21 @@ class ToolsRepository:
             return "Error: Invalid input format. Please provide a valid JSON string."
         except Exception as e:
             return f"Error sending email: {str(e)}"
+        
+    def _template_generator(self, user_input: str) -> str:
+        # Placeholder for template generation implementation
+        return f"Template generated based on input: {user_input[:100]}..."  
+        
+    def _web_search(self, query: str) -> str:
+        # Placeholder for web search implementation
+        return f"Web search results for: {query}"
+    
+    def _calculator(self, expression: str) -> str:
+        try:
+            result = eval(expression)
+            return f"Result: {result}"
+        except Exception as e:
+            return f"Error in calculation: {str(e)}"
     
     def _data_analyzer(self, data: str) -> str:
         # Placeholder for data analysis implementation

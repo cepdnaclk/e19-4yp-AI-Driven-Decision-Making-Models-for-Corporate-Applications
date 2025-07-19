@@ -25,8 +25,8 @@ agents.db
 data/pdfs/
 data/vectors/
 data/agents/
-pdf_store/templates/
-pdf_store/generated/
+
+docx/templates/
 
 # VSCode
 .vscode/

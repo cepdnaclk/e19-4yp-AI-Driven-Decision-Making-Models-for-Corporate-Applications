@@ -14,12 +14,12 @@ def send_email(
     email_data: EmailRequest,
     user=Depends(auth_dependencies.get_current_user)
 ):
-    sender = user.get("email")
-    if not sender:
-        raise HTTPException(status_code=400, detail="User email not found")
+    # sender = user.get("email")
+    # if not sender:
+    #     raise HTTPException(status_code=400, detail="User email not found")
 
     try:
-        send_real_email(sender, email_data.to, email_data.subject, email_data.body)
+        send_real_email(email_data.to, email_data.subject, email_data.body)
     except Exception as e:
         logging.error(f"Failed to send email: {e}")
         raise HTTPException(status_code=500, detail="Failed to send email")

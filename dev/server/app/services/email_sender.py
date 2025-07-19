@@ -10,13 +10,13 @@ SMTP_EMAIL = os.getenv("SMTP_EMAIL")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 EMAIL_SIMULATION_MODE = os.getenv("EMAIL_SIMULATION_MODE", "false").lower() == "true"
 
-def send_real_email(sender, recipient, subject, body):
+def send_real_email(recipient, subject, body):
     if EMAIL_SIMULATION_MODE:
-        logging.info(f"[SIMULATED EMAIL] From: {sender}, To: {recipient}, Subject: {subject}\nBody:\n{body}")
+        logging.info(f"[SIMULATED EMAIL] To: {recipient}, Subject: {subject}\nBody:\n{body}")
         return  # Don’t actually send
     else:
         msg = EmailMessage()
-        msg["From"] = sender
+        # msg["From"] = sender
         msg["To"] = recipient
         msg["Subject"] = subject
         msg.set_content(body)

@@ -30,7 +30,7 @@ const templateFields = {
   offer_letter: [
     { name: "date", label: "Date" },
     { name: "fullName", label: "Full Name" },
-    { name: "address", label: "Start Date" },
+    { name: "address", label: "Address" },
     { name: "salutation", label: "Salutation" },
     { name: "firstname", label: "First Name" },
     { name: "designation", label: "Designation" },

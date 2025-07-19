@@ -20,21 +20,21 @@ class ToolsRepository:
                 description="Send emails. Input should be a JSON string with recipient, subject, and body fields. Example: {\"recipient\": \"user@example.com\", \"subject\": \"Hello\", \"body\": \"Message content\"}",
                 func=self._email_sender
             ),
-            "web_search": Tool(
-                name="web_search",
-                description="Search the web for current information",
-                func=self._web_search
-            ),
-            "data_analyzer": Tool(
-                name="data_analyzer",
-                description="Analyze data and generate insights",
-                func=self._data_analyzer
-            ),
-            "calculator": Tool(
-                name="calculator",
-                description="Perform mathematical calculations",
-                func=self._calculator
-            )
+            # "web_search": Tool(
+            #     name="web_search",
+            #     description="Search the web for current information",
+            #     func=self._web_search
+            # ),
+            # "data_analyzer": Tool(
+            #     name="data_analyzer",
+            #     description="Analyze data and generate insights",
+            #     func=self._data_analyzer
+            # ),
+            # "calculator": Tool(
+            #     name="calculator",
+            #     description="Perform mathematical calculations",
+            #     func=self._calculator
+            # )
         }
     
     def _file_reader(self, file_path: str) -> str:
@@ -67,20 +67,20 @@ class ToolsRepository:
         # Placeholder for template generation implementation
         return f"Template generated based on input: {user_input[:100]}..."  
         
-    def _web_search(self, query: str) -> str:
-        # Placeholder for web search implementation
-        return f"Web search results for: {query}"
+    # def _web_search(self, query: str) -> str:
+    #     # Placeholder for web search implementation
+    #     return f"Web search results for: {query}"
     
-    def _calculator(self, expression: str) -> str:
-        try:
-            result = eval(expression)
-            return f"Result: {result}"
-        except Exception as e:
-            return f"Error in calculation: {str(e)}"
+    # def _calculator(self, expression: str) -> str:
+    #     try:
+    #         result = eval(expression)
+    #         return f"Result: {result}"
+    #     except Exception as e:
+    #         return f"Error in calculation: {str(e)}"
     
-    def _data_analyzer(self, data: str) -> str:
-        # Placeholder for data analysis implementation
-        return f"Data analysis complete for: {data[:100]}..."
+    # def _data_analyzer(self, data: str) -> str:
+    #     # Placeholder for data analysis implementation
+    #     return f"Data analysis complete for: {data[:100]}..."
     
     def get_available_tools(self) -> List[str]:
         return list(self.tools.keys())

@@ -27,12 +27,18 @@ const templateFields = {
     { name: "reason", label: "Reason", textarea: true },
     { name: "employeeName", label: "Employee Name" },
   ],
-  offer: [
-    { name: "candidateName", label: "Candidate's Name" },
-    { name: "jobRole", label: "Job Role" },
+  offer_letter: [
+    { name: "date", label: "Date" },
+    { name: "fullName", label: "Full Name" },
+    { name: "address", label: "Start Date" },
+    { name: "salutation", label: "Salutation" },
+    { name: "firstname", label: "First Name" },
+    { name: "designation", label: "Designation" },
     { name: "startDate", label: "Start Date" },
-    { name: "department", label: "Department" },
-    { name: "salary", label: "Salary" },
+    { name: "endDate", label: "End Date" },
+    { name: "basicSalary", label: "Basic Salary" },
+    { name: "fixedAllowance", label: "Fixed Allowance" },
+    { name: "reportingDate", label: "Report Date" },
   ],
   rejection: [
     { name: "candidateName", label: "Candidate's Name" },
@@ -110,7 +116,7 @@ function TemplateForm({ onClose, onLetterGenerated, userRole }) {
 
             {userRole !== "customer" && (
               <>
-                <option value="offer">Offer Letter</option>
+                <option value="offer_letter">Offer Letter</option>
                 <option value="rejection">Rejection Letter</option>
               </>
             )}

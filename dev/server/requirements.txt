@@ -17,3 +17,4 @@ python-jose[cryptography]
 jwt
 aiosmtplib 
 email-validator
+pdfrw

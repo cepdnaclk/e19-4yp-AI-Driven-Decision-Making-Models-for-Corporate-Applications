@@ -1,26 +1,39 @@
-import smtplib
-from email.message import EmailMessage
 import os
-import logging
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
+from fastapi import HTTPException, UploadFile
 from dotenv import load_dotenv
 
 load_dotenv()
 
-SMTP_EMAIL = os.getenv("SMTP_EMAIL")
-SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
-EMAIL_SIMULATION_MODE = os.getenv("EMAIL_SIMULATION_MODE", "false").lower() == "true"
+def send_real_email(to: str, subject: str, body: str, files: list[UploadFile]):
+    app_email = os.getenv("APP_EMAIL")
+    app_password = os.getenv("APP_PASSWORD")
 
-def send_real_email(recipient, subject, body):
-    if EMAIL_SIMULATION_MODE:
-        logging.info(f"[SIMULATED EMAIL] To: {recipient}, Subject: {subject}\nBody:\n{body}")
-        return  # Don’t actually send
-    else:
-        msg = EmailMessage()
-        # msg["From"] = sender
-        msg["To"] = recipient
-        msg["Subject"] = subject
-        msg.set_content(body)
+    if not app_email or not app_password:
+        raise HTTPException(status_code=500, detail="Email credentials missing")
 
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
-            smtp.login(SMTP_EMAIL, SMTP_PASSWORD)
-            smtp.send_message(msg)
+    # Build email
+    msg = MIMEMultipart()
+    msg["Subject"] = subject
+    msg["From"] = app_email
+    msg["To"] = to
+
+    # Add the body
+    msg.attach(MIMEText(body, "plain"))
+
+    # Attach files
+    for file in files:
+        content = file.file.read()
+        part = MIMEApplication(content, Name=file.filename)
+        part["Content-Disposition"] = f'attachment; filename="{file.filename}"'
+        msg.attach(part)
+
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(app_email, app_password)
+            server.sendmail(app_email, [to], msg.as_string())
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to send email: {str(e)}")

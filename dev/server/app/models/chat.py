@@ -61,3 +61,8 @@ class EmailInput(BaseModel):
     recipient: EmailStr = Field(..., description="Recipient's email address")
     subject: str = Field(..., description="Subject of the email")
     body: str = Field(..., description="Body of the email")
+
+class EmailRequest(BaseModel):
+    to: EmailStr
+    subject: str
+    body: str

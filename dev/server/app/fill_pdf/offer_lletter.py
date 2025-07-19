@@ -14,7 +14,7 @@ def fill_offer_letter(letter_content: str, output_path="pdf_store/generated/Offe
             for annotation in annotations:
                 if annotation.get("/T") and annotation.get("/Subtype") == "/Widget":
                     key = annotation["/T"][1:-1]  # Remove brackets
-                    if key == "letterBody":
+                    if key == "offerLetterBody":
                         annotation.update(PdfDict(V=f"{letter_content}"))
 
     PdfWriter(output_path, trailer=template_pdf).write()

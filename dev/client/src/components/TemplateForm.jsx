@@ -12,46 +12,37 @@ import {
 import { useState } from "react";
 
 const templateFields = {
-    leave_apply: [
-    { name: "managerName", label: "Manager's Name" },
-    { name: "leaveType", label: "Leave Type" },
-    { name: "numberOfDays", label: "No. of Days" },
-    { name: "startDate", label: "Start Date" },
-    { name: "endDate", label: "End Date" },
-    { name: "reason", label: "Reason", textarea: true },
-    { name: "employeeName", label: "Employee Name" },
-  ],
   offer_letter: [
     { name: "date", label: "Today Date" },
     { name: "fullName", label: "Full Name" },
     { name: "address", label: "Address" },
     { name: "salutation", label: "Salutation" },
-    { name: "firstname", label: "First Name" },
+    { name: "fName", label: "First Name" },
     { name: "designation", label: "Designation" },
     { name: "startDate", label: "Start Date" },
     { name: "endDate", label: "End Date" },
-    { name: "basicSalary", label: "Basic Salary" },
-    { name: "fixedAllowance", label: "Fixed Allowance" },
-    { name: "reportingDate", label: "Report Date" },
+    { name: "salary", label: "Basic Salary" },
+    { name: "allowance", label: "Fixed Allowance" },
+    { name: "reportDate", label: "Report Date" },
   ],
   confirmation_letter: [
     { name: "date", label: "Today Date" },
     { name: "fullName", label: "Full Name" },
     { name: "address", label: "Address" },
-    { name: "salutation", label: "Salutation" },
-    { name: "firstname", label: "First Name" },
+    { name: "saltation", label: "Salutation" },
+    { name: "fName", label: "First Name" },
     { name: "designation", label: "Designation" },
     { name: "effectiveDate", label: "Effective From" },
     { name: "boardNo", label: "Board No." },
     { name: "meetingDate", label: "Date of Meeting" },
-    { name: "basicSalary", label: "Basic Salary" },
+    { name: "salary", label: "Basic Salary" },
     { name: "allowance", label: "Allowance" },
   ],
 };
 
 function TemplateForm({ onClose, onLetterGenerated, userRole }) {
   const toast = useToast();
-  const [templateType, setTemplateType] = useState("leave_apply");
+  const [templateType, setTemplateType] = useState("offer_letter");
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -76,14 +67,37 @@ function TemplateForm({ onClose, onLetterGenerated, userRole }) {
         }),
       });
 
-      const data = await res.json();
-      if (res.ok) {
-        onLetterGenerated(data.content);
-        toast({ title: "Letter Generated", status: "success" });
+      if (
+        templateType === "offer_letter" ||
+        templateType === "confirmation_letter"
+      ) {
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "letter.docx";
+        a.click();
+        window.URL.revokeObjectURL(url);
+        toast({ title: "Letter Downloaded", status: "success" });
+
+        onLetterGenerated({
+          type: "docx",
+          url: url,
+        });
+
         onClose();
       } else {
-        toast({ title: "Error", description: data.detail, status: "error" });
+        const data = await res.json();
+        if (res.ok) {
+          onLetterGenerated(data.content);
+          toast({ title: "Letter Generated", status: "success" });
+          onClose();
+        } else {
+          toast({ title: "Error", description: data.detail, status: "error" });
+        }
       }
+
+      onClose();
     } catch (err) {
       toast({ title: "Error", description: err.message, status: "error" });
     } finally {
@@ -113,9 +127,6 @@ function TemplateForm({ onClose, onLetterGenerated, userRole }) {
               setFormData({});
             }}
           >
-            
-            <option value="leave_apply">Leave Application</option>
-
             {userRole !== "customer" && (
               <>
                 <option value="offer_letter">Offer Letter</option>

@@ -26,7 +26,6 @@ import {
   FormControl,
   FormLabel,
 } from "@chakra-ui/react";
-import jsPDF from "jspdf";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { FaTools } from "react-icons/fa";
@@ -249,116 +248,82 @@ function Chat() {
     }
   };
 
-  const handleLetterGenerated = async (letterContent) => {
-    const assistantMessage = { role: "assistant", content: letterContent };
-    const updatedMessages = [...messages, assistantMessage];
-
-    setMessages(updatedMessages);
-
-    // Trigger download as PDF
-    const doc = new jsPDF();
-    const splitText = doc.splitTextToSize(letterContent, 180); // 180mm wide block
-    doc.text(splitText, 10, 10);
-    doc.save("generated_letter.pdf"); // download file
-
-    try {
-      const response = await fetch(
-        `http://localhost:8000/letters/${agentId}/store-generated-message`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            content: letterContent,
-            history: messages, // send current history before this message
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to store generated letter");
-      }
-
-      const data = await response.json();
-      setMessages(data.chat_history); // updated history returned from backend
-      toast({
-        title: "Letter stored successfully",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-    } catch (err) {
-      console.error("Failed to store letter:", err);
-      toast({
-        title: "Failed to store generated letter",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+  const handleLetterGenerated = async (letterData) => {
+    if (letterData.type === "docx") {
+      const assistantMessage = {
+        role: "assistant",
+        content: `📄 Letter generated and downloaded.`,
+        fileUrl: letterData.url,
+        fileType: "docx",
+      };
+      setMessages((prev) => [...prev, assistantMessage]);
+    } else {
+      const assistantMessage = {
+        role: "assistant",
+        content: letterData.content,
+      };
+      setMessages((prev) => [...prev, assistantMessage]);
     }
   };
 
-const handleSendEmail = async () => {
-  if (!emailTo || !emailSubject || !emailBody) {
-    toast({
-      title: "Missing fields",
-      description: "All fields are required.",
-      status: "warning",
-      duration: 3000,
-      isClosable: true,
-    });
-    return;
-  }
-
-  try {
-    const res = await fetch("http://localhost:8000/send-email", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        to: emailTo,
-        subject: emailSubject,
-        body: emailBody,
-      }),
-    });
-
-    if (res.ok) {
-      // ✅ Add email as assistant message
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          role: "assistant",
-          content: `**To:** ${emailTo}\n**Subject:** ${emailSubject}\n\n${emailBody}`,
-        },
-      ]);
-
-      toast({ title: "Email Sent", status: "success" });
-      setEmailTo("");
-      setEmailSubject("");
-      setEmailBody("");
-      setIsEmailOpen(false); // close modal
-    } else {
-      const errData = await res.json();
-      console.error("Backend error:", errData);
+  const handleSendEmail = async () => {
+    if (!emailTo || !emailSubject || !emailBody) {
       toast({
-        title: "Email Failed",
-        description: errData.detail,
+        title: "Missing fields",
+        description: "All fields are required.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:8000/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          to: emailTo,
+          subject: emailSubject,
+          body: emailBody,
+        }),
+      });
+
+      if (res.ok) {
+        // ✅ Add email as assistant message
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            role: "assistant",
+            content: `**To:** ${emailTo}\n**Subject:** ${emailSubject}\n\n${emailBody}`,
+          },
+        ]);
+
+        toast({ title: "Email Sent", status: "success" });
+        setEmailTo("");
+        setEmailSubject("");
+        setEmailBody("");
+        setIsEmailOpen(false); // close modal
+      } else {
+        const errData = await res.json();
+        console.error("Backend error:", errData);
+        toast({
+          title: "Email Failed",
+          description: errData.detail,
+          status: "error",
+        });
+      }
+    } catch (err) {
+      toast({
+        title: "Request failed",
+        description: err.message,
         status: "error",
       });
     }
-  } catch (err) {
-    toast({
-      title: "Request failed",
-      description: err.message,
-      status: "error",
-    });
-  }
-};
-
+  };
 
   const clearChat = async () => {
     setIsClearing(true);
@@ -503,14 +468,16 @@ const handleSendEmail = async () => {
                     >
                       Attach Files
                     </Button>
-                    <Button
-                      leftIcon={<RiAiGenerateText />}
-                      size="sm"
-                      variant="ghost"
-                      onClick={onOpen}
-                    >
-                      Generate Templates
-                    </Button>
+                    {currentUserRole !== "customer" && (
+                      <Button
+                        leftIcon={<RiAiGenerateText />}
+                        size="sm"
+                        variant="ghost"
+                        onClick={onOpen}
+                      >
+                        Generate Templates
+                      </Button>
+                    )}
                     <Button
                       leftIcon={<MdOutlineMarkEmailRead />}
                       size="sm"

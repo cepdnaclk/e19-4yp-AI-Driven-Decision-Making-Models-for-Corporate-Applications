@@ -6,17 +6,17 @@ TEMPLATES = {
 {fullName},  
 {address}
 
-Dear {salutation} {firstname},
+Dear {salutation} {fName},
 
 LETTER OF OFFER
 
 We are pleased to offer you the position of {designation} at Lanka Education And Research Network 
 (LEARN) on a fixed term contract for a period of one (01) year commencing on {startDate} and ending on {endDate}.
 
-You will be paid a basic salary of LKR {basicSalary}/- per month plus a monthly fixed allowance 
-of LKR {fixedAllowance}/-.
+You will be paid a basic salary of LKR {salary}/- per month plus a monthly fixed allowance 
+of LKR {allowance}/-.
 
-You will be required to report to LEARN on {reportingDate}.
+You will be required to report to LEARN on {reportDate}.
 
 Sincerely,  
 """,
@@ -28,7 +28,7 @@ Sincerely,
 {fullName},  
 {address}
 
-Dear {salutation} {firstname},
+Dear {saltation} {fName},
 
 Letter of Confirmation
 
@@ -38,7 +38,7 @@ Lanka Education and Research Network (LEARN), effective from {effectiveDate}.
 We wish to inform you that at the {boardNo}th Board of Directors Meeting of LEARN held on {meetingDate} it was 
 decided to confirm your services on a permanent basis in your position as {designation} with effect from 
 {effectiveDate}. Further, it was decided to place you, in your next increment step that you are eligible after 
-completion of one year service with LEARN. Therefore, your basic salary will be {basicSalary}/- + 
+completion of one year service with LEARN. Therefore, your basic salary will be {salary}/- + 
 {allowance}/- allowance per month with effect from the date of confirmation. All other terms and 
 conditions of your employment will remain as outlined in your initial Letter of Appointment, unless revised or 
 updated by the Board of Directors in the future.

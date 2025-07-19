@@ -3,3 +3,4 @@ from . import agents
 from . import tools
 from . import users
 from . import letters
+from . import email

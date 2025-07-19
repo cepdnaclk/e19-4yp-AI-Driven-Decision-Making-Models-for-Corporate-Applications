@@ -17,19 +17,23 @@ import {
   ModalOverlay,
   ModalContent,
   ModalHeader,
+  ModalFooter,
   ModalCloseButton,
   ModalBody,
   useDisclosure,
   Spacer,
+  Textarea,
+  FormControl,
+  FormLabel,
 } from "@chakra-ui/react";
 import jsPDF from "jspdf";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import { MdAttachFile } from "react-icons/md";
 import { FaTools } from "react-icons/fa";
 import { RiAiGenerateText } from "react-icons/ri";
 import TemplateForm from "../components/TemplateForm";
 import ClearChatButton from "../components/ClearChatButton";
+import { MdOutlineMarkEmailRead, MdAttachFile } from "react-icons/md";
 
 function Chat() {
   const { agentId } = useParams();
@@ -44,6 +48,13 @@ function Chat() {
   const [initialLoading, setInitialLoading] = useState(true);
   const messagesEndRef = useRef(null);
   const [showWhatsappButton, setShowWhatsappButton] = useState(false);
+
+  // Email modal state
+  const [isEmailOpen, setIsEmailOpen] = useState(false);
+  const [emailTo, setEmailTo] = useState("");
+  const [emailFrom, setEmailFrom] = useState("");
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailBody, setEmailBody] = useState("");
 
   const [isClearing, setIsClearing] = useState(false);
 
@@ -233,7 +244,6 @@ function Chat() {
       ]);
 
       toast({ title: "Documents uploaded successfully", status: "success" });
-
     } catch (err) {
       toast({ title: "Upload failed", status: "error" });
     }
@@ -289,6 +299,66 @@ function Chat() {
       });
     }
   };
+
+const handleSendEmail = async () => {
+  if (!emailTo || !emailSubject || !emailBody) {
+    toast({
+      title: "Missing fields",
+      description: "All fields are required.",
+      status: "warning",
+      duration: 3000,
+      isClosable: true,
+    });
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:8000/send-email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        to: emailTo,
+        subject: emailSubject,
+        body: emailBody,
+      }),
+    });
+
+    if (res.ok) {
+      // ✅ Add email as assistant message
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          role: "assistant",
+          content: `**To:** ${emailTo}\n**Subject:** ${emailSubject}\n\n${emailBody}`,
+        },
+      ]);
+
+      toast({ title: "Email Sent", status: "success" });
+      setEmailTo("");
+      setEmailSubject("");
+      setEmailBody("");
+      setIsEmailOpen(false); // close modal
+    } else {
+      const errData = await res.json();
+      console.error("Backend error:", errData);
+      toast({
+        title: "Email Failed",
+        description: errData.detail,
+        status: "error",
+      });
+    }
+  } catch (err) {
+    toast({
+      title: "Request failed",
+      description: err.message,
+      status: "error",
+    });
+  }
+};
+
 
   const clearChat = async () => {
     setIsClearing(true);
@@ -441,6 +511,15 @@ function Chat() {
                     >
                       Generate Templates
                     </Button>
+                    <Button
+                      leftIcon={<MdOutlineMarkEmailRead />}
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setIsEmailOpen(true)}
+                      aria-label="Email Box"
+                    >
+                      Send Email
+                    </Button>
                   </VStack>
                 </PopoverBody>
               </PopoverContent>
@@ -487,6 +566,53 @@ function Chat() {
               userRole={currentUserRole}
             />
           </ModalBody>
+        </ModalContent>
+      </Modal>
+
+      {/* Email Modal */}
+      <Modal isOpen={isEmailOpen} onClose={() => setIsEmailOpen(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Send Email</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={4}>
+            <FormControl>
+              <FormLabel>To</FormLabel>
+              <Input
+                value={emailTo}
+                onChange={(e) => setEmailTo(e.target.value)}
+              />
+            </FormControl>
+
+            <FormControl mt={3}>
+              <FormLabel>From</FormLabel>
+              <Input value={emailFrom} isReadOnly />
+            </FormControl>
+
+            <FormControl mt={3}>
+              <FormLabel>Subject</FormLabel>
+              <Input
+                value={emailSubject}
+                onChange={(e) => setEmailSubject(e.target.value)}
+                placeholder="Subject"
+              />
+            </FormControl>
+
+            <FormControl mt={3}>
+              <FormLabel>Body</FormLabel>
+              <Textarea
+                value={emailBody}
+                onChange={(e) => setEmailBody(e.target.value)}
+              />
+            </FormControl>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={handleSendEmail}>
+              Send
+            </Button>
+            <Button onClick={() => setIsEmailOpen(false)}>Cancel</Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </VStack>

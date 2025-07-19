@@ -1,11 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import init_db
-from app.api.v1.endpoints import tools, agents, chat, users, letters
+from app.api.v1.endpoints import tools, agents, chat, users, letters, email
 
 app = FastAPI(title="Agentic AI Platform", version="1.0.0")
 
-# CORS middleware
+# CORS middleware setup
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -23,6 +23,7 @@ app.include_router(agents.router, prefix="/agents", tags=["Agents"])
 app.include_router(chat.router, prefix="/chat", tags=["Chat"])
 app.include_router(users.router, tags=["Users"])
 app.include_router(letters.router, prefix="/letters", tags=["Letters"])
+app.include_router(email.router, tags=["Email"])
 
 @app.get("/")
 async def root():

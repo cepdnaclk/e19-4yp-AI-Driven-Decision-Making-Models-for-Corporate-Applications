@@ -41,7 +41,6 @@
     - formik and yup => npm install formik yup
     - react-icons => npm install react-icons
     - sweet alerts => npm install sweetalert2
-    - jsPDF => npm install jspdf
 
 ## Server
 

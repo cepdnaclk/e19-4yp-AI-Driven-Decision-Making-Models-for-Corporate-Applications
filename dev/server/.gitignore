@@ -26,8 +26,6 @@ data/pdfs/
 data/vectors/
 data/agents/
 
-docx/templates/
-
 # VSCode
 .vscode/
 

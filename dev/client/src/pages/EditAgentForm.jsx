@@ -192,7 +192,7 @@ function EditAgentForm() {
                   <FormLabel>Available Tools</FormLabel>
                   <SimpleGrid
                     background="#eef1f3ff"
-                    columns={[1, 2]}
+                    columns={[1, 3]}
                     spacing={2}
                     p={3}
                   >

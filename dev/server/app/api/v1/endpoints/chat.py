@@ -20,7 +20,7 @@ async def chat_with_agent(
         user_id = user["sub"]
         user_role = user["role"]
 
-        print("✅ Chat requested by", user_id, "with role", user_role)
+        print("Chat requested by", user_id, "with role", user_role)
 
         if not user_id:
             raise HTTPException(status_code=401, detail="Missing user ID in token")

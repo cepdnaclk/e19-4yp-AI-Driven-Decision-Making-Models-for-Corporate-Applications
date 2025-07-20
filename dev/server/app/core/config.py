@@ -59,7 +59,7 @@ def init_db():
         cursor.execute('''
             INSERT INTO users (id, username, password, email, role) VALUES (?, ?, ?, ?, ?)
         ''', (str(uuid.uuid4()), 'admin', admin_pw, 'admin@gmail.com', 'admin'))
-        print("✅ Default admin created. Username: admin, Password: admin123")
+        print("Default admin created. Username: admin, Password: admin123")
 
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS agent_assignments (

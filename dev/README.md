@@ -50,3 +50,5 @@
     - uvicorn app.main:app --reload
 
 
+    - .\venv\Scripts\Activate
+    - uvicorn app.main:app --reload

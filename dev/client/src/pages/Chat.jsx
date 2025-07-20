@@ -38,6 +38,7 @@ function Chat() {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [agent, setAgent] = useState(null);
+  const [agentTools, setAgentTools] = useState([]);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -85,6 +86,7 @@ function Chat() {
 
         const agentData = await agentRes.json();
         setAgent(agentData);
+        setAgentTools(agentData.tools || []);
 
         // Fetch chat history
         const chatRes = await fetch(`http://localhost:8000/chat/${agentId}`, {
@@ -396,35 +398,42 @@ function Chat() {
               <PopoverContent width="fit-content">
                 <PopoverBody>
                   <VStack align="start" spacing={2}>
-                    <Button
-                      leftIcon={<MdAttachFile />}
-                      size="sm"
-                      variant="ghost"
-                      onClick={() =>
-                        document.getElementById("fileInput").click()
-                      }
-                    >
-                      Attach Files
-                    </Button>
-                    {currentUserRole !== "customer" && (
+                    {agentTools.includes("file_reader") && (
                       <Button
-                        leftIcon={<RiAiGenerateText />}
+                        leftIcon={<MdAttachFile />}
                         size="sm"
                         variant="ghost"
-                        onClick={onOpen}
+                        onClick={() =>
+                          document.getElementById("fileInput").click()
+                        }
                       >
-                        Generate Templates
+                        Attach Files
                       </Button>
                     )}
-                    <Button
-                      leftIcon={<MdOutlineMarkEmailRead />}
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => setIsEmailOpen(true)}
-                      aria-label="Email Box"
-                    >
-                      Send Email
-                    </Button>
+
+                    {agentTools.includes("template_generator") &&
+                      currentUserRole !== "customer" && (
+                        <Button
+                          leftIcon={<RiAiGenerateText />}
+                          size="sm"
+                          variant="ghost"
+                          onClick={onOpen}
+                        >
+                          Generate Templates
+                        </Button>
+                      )}
+
+                    {agentTools.includes("email_sender") && (
+                      <Button
+                        leftIcon={<MdOutlineMarkEmailRead />}
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setIsEmailOpen(true)}
+                        aria-label="Email Box"
+                      >
+                        Send Email
+                      </Button>
+                    )}
                   </VStack>
                 </PopoverBody>
               </PopoverContent>

@@ -90,7 +90,7 @@ export default function CreateUserForm() {
                 <FormLabel>Role</FormLabel>
                 <Select value={role} onChange={(e) => setRole(e.target.value)}>
                   <option value="employee">HR Staff</option>
-                  <option value="customer">Others</option>
+                  <option value="customer">Internal Employees</option>
                 </Select>
               </FormControl>
 

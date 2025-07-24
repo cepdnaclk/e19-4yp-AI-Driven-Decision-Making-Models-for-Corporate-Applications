@@ -13,28 +13,28 @@ import { useState } from "react";
 
 const templateFields = {
   offer_letter: [
-    { name: "date", label: "Today Date" },
+    { name: "date", label: "Today Date", type: "date" },
     { name: "fullName", label: "Full Name" },
-    { name: "address", label: "Address" },
-    { name: "salutation", label: "Salutation" },
+    { name: "address", label: "Address", textarea: true },
+    { name: "salutation", label: "Salutation", select: true, options: ["Mr", "Miss", "Mrs", "Rev"] },
     { name: "fName", label: "First Name" },
     { name: "designation", label: "Designation" },
-    { name: "startDate", label: "Start Date" },
-    { name: "endDate", label: "End Date" },
+    { name: "startDate", label: "Start Date", type: "date" },
+    { name: "endDate", label: "End Date", type: "date" },
     { name: "salary", label: "Basic Salary" },
     { name: "allowance", label: "Fixed Allowance" },
-    { name: "reportDate", label: "Report Date" },
+    { name: "reportDate", label: "Report Date", type: "date" },
   ],
   confirmation_letter: [
-    { name: "date", label: "Today Date" },
+    { name: "date", label: "Today Date", type: "date" },
     { name: "fullName", label: "Full Name" },
-    { name: "address", label: "Address" },
-    { name: "saltation", label: "Salutation" },
+    { name: "address", label: "Address", textarea: true },
+    { name: "salutation", label: "Salutation", select: true, options: ["Mr", "Miss", "Mrs", "Rev"] },
     { name: "fName", label: "First Name" },
     { name: "designation", label: "Designation" },
-    { name: "effectiveDate", label: "Effective From" },
+    { name: "effectiveDate", label: "Effective From", type: "date" },
     { name: "boardNo", label: "Board No." },
-    { name: "meetingDate", label: "Date of Meeting" },
+    { name: "meetingDate", label: "Date of Meeting", type: "date" },
     { name: "salary", label: "Basic Salary" },
     { name: "allowance", label: "Allowance" },
   ],
@@ -49,7 +49,20 @@ function TemplateForm({ onClose, onLetterGenerated, userRole }) {
   const token = localStorage.getItem("access_token");
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    
+    let cleanedValue = value;
+
+    if (name === "address") {
+      // Normalize line breaks and split by comma
+      cleanedValue = value
+        .replace(/[\r\n]+/g, '')        // remove existing line breaks
+        .split(',')
+        .map(part => part.trim())       // clean each part
+        .join(',\n');                   // rejoin with a newline after each comma
+    }
+
+    setFormData({ ...formData, [name]: cleanedValue });
   };
 
   const handleSubmit = async () => {
@@ -139,7 +152,20 @@ function TemplateForm({ onClose, onLetterGenerated, userRole }) {
         {fields.map((field) => (
           <FormControl key={field.name} isRequired={!field.optional}>
             <FormLabel>{field.label}</FormLabel>
-            {field.textarea ? (
+              {field.select ? (
+                <Select
+                  name={field.name}
+                  value={formData[field.name] || ""}
+                  onChange={handleChange}
+                >
+                  <option value="">Select {field.label}</option>
+                  {field.options.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </Select>
+              ) : field.textarea ? (
               <Textarea
                 name={field.name}
                 value={formData[field.name] || ""}
@@ -147,6 +173,7 @@ function TemplateForm({ onClose, onLetterGenerated, userRole }) {
               />
             ) : (
               <Input
+                type={field.type === "date" ? "date" : "text"} 
                 name={field.name}
                 value={formData[field.name] || ""}
                 onChange={handleChange}
